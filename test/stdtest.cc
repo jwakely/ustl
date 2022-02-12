@@ -34,12 +34,14 @@ static void Terminate (void)
     exit (EXIT_FAILURE);
 }
 
+#if !HAVE_CPP14
 /// Called when an exception violates a throw specification.
 static void OnUnexpected (void)
 {
     cerr << "Fatal internal error: unexpected exception caught." << endl;
     Terminate();
 }
+#endif
 
 /// Installs OnSignal as handler for signals.
 static void InstallCleanupHandlers (void)
@@ -52,7 +54,9 @@ static void InstallCleanupHandlers (void)
     for (uoff_t i = 0; i < VectorSize(c_Signals); ++i)
 	signal (c_Signals[i], OnSignal);
     std::set_terminate (Terminate);
+#if !HAVE_CPP14
     std::set_unexpected (OnUnexpected);
+#endif
 }
 
 int StdTestHarness (stdtestfunc_t testFunction)

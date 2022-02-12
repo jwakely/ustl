@@ -18,8 +18,10 @@ terminate_handler set_terminate (terminate_handler pHandler) noexcept;
 /// The runtime will call this function if exception handling must be
 /// abandoned for any reason.  It can also be called by the user.
 void terminate (void) noexcept __attribute__ ((__noreturn__));
+#if !HAVE_CPP14
 /// Takes a new handler function as an argument, returns the old function.
 unexpected_handler set_unexpected (unexpected_handler pHandler) noexcept;
+#endif
 /// The runtime will call this function if an exception is thrown which
 /// violates the function's exception specification.
 void unexpected (void) __attribute__ ((__noreturn__));
