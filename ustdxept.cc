@@ -100,10 +100,8 @@ file_exception::file_exception (const char* operation, const char* filename) noe
 {
     memset (_filename, 0, VectorSize(_filename));
     set_format (xfmt_FileException);
-    if (filename) {
-	strncpy (_filename, filename, VectorSize(_filename));
-	_filename [VectorSize(_filename) - 1] = 0;
-    }
+    if (filename)
+	strncpy (_filename, filename, VectorSize(_filename)-1);
 }
 
 /// Returns a descriptive error message. fmt="%s %s: %s"
