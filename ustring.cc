@@ -355,7 +355,7 @@ size_t string::stream_size (void) const noexcept
 /// Reads the object from stream \p os
 void string::read (istream& is)
 {
-    char szbuf [8];
+    char szbuf[8] = {};
     is >> szbuf[0];
     size_t szsz (Utf8SequenceBytes (szbuf[0]) - 1), n = 0;
     if (!is.verify_remaining ("read", "ustl::string", szsz)) return;
