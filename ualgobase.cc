@@ -168,19 +168,19 @@ template <> inline void build_block (uint8_t v)
 {
     asm volatile (
 	"movd %0, %%mm0\n\tpunpcklbw %%mm0, %%mm0\n\tpshufw $0, %%mm0, %%mm0"
-	: : "g"(uint32_t(v)) : "mm0");
+	: : "rm"(uint32_t(v)) : "mm0");
 }
 template <> inline void build_block (uint16_t v)
 {
     asm volatile (
 	"movd %0, %%mm0\n\tpshufw $0, %%mm0, %%mm0"
-	: : "g"(uint32_t(v)) : "mm0");
+	: : "rm"(uint32_t(v)) : "mm0");
 }
 template <> inline void build_block (uint32_t v)
 {
     asm volatile (
 	"movd %0, %%mm0\n\tpunpckldq %%mm0, %%mm0"
-	: : "g"(uint32_t(v)) : "mm0");
+	: : "rm"(uint32_t(v)) : "mm0");
 }
 
 static inline void simd_block_fill_loop (uint8_t*& dest, size_t count)
