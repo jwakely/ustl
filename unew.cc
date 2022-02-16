@@ -18,7 +18,6 @@ void nfree (void* p) noexcept
 extern "C" void nfreen (void* p, size_t) noexcept
     { nfree(p); }
 
-#if WITHOUT_LIBSTDCPP
 #if __APPLE__	// MacOS lives in the stone age and does not support aliases
 
 void* operator new (size_t n)	{ return tmalloc(n); }
@@ -44,4 +43,3 @@ void  operator delete[] (void* p, size_t n) noexcept	WEAKALIAS("nfreen");
 #endif // HAVE_CPP14
 
 #endif // __APPLE__
-#endif // WITHOUT_LIBSTDCPP

@@ -4,13 +4,10 @@ NAME		:= @PKG_NAME@
 MAJOR		:= @PKG_MAJOR@
 MINOR		:= @PKG_MINOR@
 
-#DEBUG		:= 1
-NOLIBSTDCPP	:= 1
-
 ################ Programs ############################################
 
 CXX		:= @CXX@
-LD		:= @CXX@
+LD		:= @CC@
 AR		:= @AR@
 RANLIB		:= @RANLIB@
 INSTALL		:= @INSTALL@
@@ -25,9 +22,12 @@ prefix		:= @prefix@
 INCDIR		:= @includedir@
 LIBDIR		:= @libdir@
 #PKGCONFIGDIR	:= @pkgconfigdir@
+BUILDDIR	:= @builddir@/${NAME}
+O		:= .o/
 
 ################ Compiler options ####################################
 
+#DEBUG		:= 1
 WARNOPTS	:= -Wall -Wextra -Woverloaded-virtual -Wpointer-arith\
 		-Wshadow -Wredundant-decls -Wcast-qual
 TGTOPTS		:= @TGT_OPTS@ @CUSTOMINCDIR@
@@ -35,7 +35,7 @@ INLINEOPTS	:= @INLINE_OPTS@
 
 CXXFLAGS	:= ${WARNOPTS} ${TGTOPTS}
 LDFLAGS		:= @CUSTOMLIBDIR@
-LIBS		:=
+LIBS		:= @libsupc++@ @libgcc_eh@ @libSystemStubs@
 ifdef DEBUG
     CXXFLAGS	+= -O0 -g
     LDFLAGS	+= -rdynamic
@@ -43,9 +43,3 @@ else
     CXXFLAGS	+= -Os -g0 -DNDEBUG=1 ${INLINEOPTS}
     LDFLAGS	+= -s -Wl,-gc-sections
 endif
-ifdef NOLIBSTDCPP
-    LD		:= @CC@
-    LIBS	+= @libsupc++@ @libgcc_eh@ @libSystemStubs@
-endif
-BUILDDIR	:= @builddir@/${NAME}
-O		:= .o/

@@ -90,19 +90,11 @@ int main (void)
     return EXIT_SUCCESS;
 }
 </pre><p>
-If you have at least gcc 3.4, uSTL is built as a standalone library,
-without linking to libstdc++ (except on BSD platforms where gcc does not
-support it) Because g++ links to it by default, you'll need to link your
-applications with gcc, or to pass <kbd>-nodefaultlibs -lgcc_s -lc</kbd>
-to g++ if you want to use uSTL to completely replace libstdc++. This is
-where most of the space savings happen.
-</p><p>
-If you build uSTL as a static library, you will also need to explicitly
-link all projects using it with -lsupc++ and other libraries that shared
-uSTL would have been linked to. The easiest way to get the list is to use
-<kbd>pkg-config --libs --static ustl</kbd>. The pkg-config description
-file for uSTL is installed if you have pkg-config on your system. The
-list is also available in the <tt>STAL_LIBS</tt> variable in Config.mk.
+Because uSTL is a static library, you will also need to explicitly link
+all projects using it with -lsupc++ and possibly other language support
+libraries. The easiest way to get the list is to use <kbd>pkg-config
+--libs ustl</kbd>. The pkg-config description file for uSTL is installed
+if you have pkg-config on your system.
 </p>
 <h2 id="Containers">Containers and Iterators</h2>
 <p>
@@ -322,9 +314,7 @@ step by step.
 <h2 id="Memblocks">Memblocks and Memlinks</h2>
 <p>
 The STL specification is only about containers and algorithms, the stuff
-described from here on is totally non-standard, so by using them you'll
-have to stick with uSTL as your STL implementation. I think it's worth
-it, but, of course, the choice is up to you.
+described from here on is totally non-standard.
 </p><p>
 The major difference between the standart STL implementation and uSTL is
 that the former has memory management stuff all over the place, while
@@ -338,9 +328,9 @@ is also absolutely necessary to do this resizing in a perfectly object-safe
 way. The uSTL way is to manage memory as an opaque, typeless block, and
 then use the container templates to cast it to an appropriate pointer type.
 </p><p>
-This works just fine, except for one little catch: there is one type
-of object you can't store in uSTL containers -- the kind that has pointers
-to itself. In other implementations, resizing actually creates new objects
+This works just fine, except for one catch: all objects stored in uSTL
+containers must be relocatable -- they must not have pointers into
+themselves. In other implementations, resizing actually creates new objects
 in the new location and destroys them in the old location. uSTL simply
 memcpys them there without calling the copy constructor. In other words,
 the object can not rely on staying at the same address. Most objects really

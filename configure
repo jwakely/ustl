@@ -39,10 +39,6 @@ seds=[s/#define \(WANT_UNROLLED_COPY\) 1/#undef \1/]
 name=[force-inline]
 desc=[make inline keyword mean always inline, not just a hint]
 seds=[s/#undef \(WANT_ALWAYS_INLINE\)/#define \1 1/]
-}{
-name=[with-libstdc++]
-desc=[link with libstdc++]
-seds=[s/#define \(WITHOUT_LIBSTDCPP\) 1/#undef \1/;s/\(NOLIBSTDCPP\)/#\1/]
 }';
 
 # Header files
@@ -116,7 +112,6 @@ else
 fi
 if [ "$SYSNAME" = "bsd" ]; then
     sub 's/ @libgcc_eh@//g
-	s/#define \(WITHOUT_LIBSTDCPP\) 1/#undef \1/
 	s/\(NOLIBSTDCPP	= -nodefaultlibs\)/#\1/
 	s/-W\(redundant-decls\)/-Wno-\1/
 	s/-W\(inline\)/-Wno-\1/

@@ -30,14 +30,6 @@
 #if HAVE_ALLOCA_H
     #include <alloca.h>
 #endif
-#ifndef WITHOUT_LIBSTDCPP
-    #include <exception>
-    #include <typeinfo>
-    #include <new>
-    #if HAVE_CPP11
-	#include <initializer_list>
-    #endif
-#endif
 #ifndef SIZE_MAX
     #define SIZE_MAX		UINT_MAX
 #endif

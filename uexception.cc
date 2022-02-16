@@ -87,10 +87,8 @@ const char* demangle_type_name (char* buf, size_t bufSize, size_t* pdmSize) noex
     return buf;
 }
 
-#if WITHOUT_LIBSTDCPP
 } // namespace ustl
 namespace std {
-#endif
 
 /// Initializes the empty object. \p nBytes is the size of the attempted allocation.
 bad_alloc::bad_alloc (size_t nBytes) noexcept

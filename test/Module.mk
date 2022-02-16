@@ -3,10 +3,7 @@
 test/SRCS	:= $(wildcard test/?????.cc)
 test/TESTS	:= $(addprefix $O,$(test/SRCS:.cc=))
 test/OBJS	:= $(addprefix $O,$(test/SRCS:.cc=.o))
-test/LIBS	:= ${LIBA}
-ifdef NOLIBSTDCPP
-test/LIBS	+= ${LIBS} -lm
-endif
+test/LIBS	:= ${LIBA} ${LIBS} -lm
 test/DEPS	:= ${test/OBJS:.o=.d} $Otest/stdtest.d
 test/OUTS	:= $(addprefix $O,$(test/SRCS:.cc=.out))
 

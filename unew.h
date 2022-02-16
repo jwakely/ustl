@@ -11,8 +11,6 @@ extern "C" void* tmalloc (size_t n) __attribute__((malloc));
 /// Just like free, but doesn't crash when given a nullptr.
 extern "C" void nfree (void* p) noexcept;
 
-#if WITHOUT_LIBSTDCPP
-
 #if __clang__
     // Turn off exception spec warnings for operator new/delete
     // uSTL does not use explicit throw specifications on them
@@ -46,5 +44,3 @@ inline void* operator new[] (size_t, void* p) noexcept	{ return p; }
 // Default placement versions of operator delete.
 inline void  operator delete  (void*, void*) noexcept	{ }
 inline void  operator delete[](void*, void*) noexcept	{ }
-
-#endif	// WITHOUT_LIBSTDCPP

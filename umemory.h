@@ -507,7 +507,7 @@ ForwardIterator uninitialized_move_n (InputIterator first, size_t n, ForwardIter
 
 //}}}-------------------------------------------------------------------
 //{{{ initializer_list
-#if HAVE_CPP11 && WITHOUT_LIBSTDCPP
+#if HAVE_CPP11
 
 namespace std {	// Internal stuff must be in std::
 

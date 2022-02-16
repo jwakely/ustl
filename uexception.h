@@ -7,7 +7,6 @@
 #include "utypes.h"
 #include "bktrace.h"
 
-#if WITHOUT_LIBSTDCPP
 namespace std {
 /// If you write a replacement terminate handler, it must be of this type.
 typedef void (*terminate_handler) (void);
@@ -28,7 +27,6 @@ void unexpected (void) __attribute__ ((__noreturn__));
 /// Returns true when the caught exception violates the throw specification.
 bool uncaught_exception() noexcept;
 } // namespace std
-#endif
 
 namespace ustl {
 
@@ -46,11 +44,7 @@ enum {
 ///
 /// \brief Base class for exceptions, equivalent to std::exception.
 ///
-#if WITHOUT_LIBSTDCPP
 class exception {
-#else
-class exception : public std::exception {
-#endif
 public:
     typedef const CBacktrace& rcbktrace_t;
 public:
@@ -100,14 +94,9 @@ const char* demangle_type_name (char* buf, size_t bufSize, size_t* pdmSize = nul
 ///
 /// \brief Exception thrown on memory allocation failure by memblock::reserve.
 ///
-#if WITHOUT_LIBSTDCPP
 } // namespace ustl
 namespace std {
 class bad_alloc : public ::ustl::exception {
-#else
-
-class bad_alloc : public std::bad_alloc, public exception {
-#endif
 public:
     explicit		bad_alloc (size_t nBytes = 0) noexcept;
     inline virtual const char*	what (void) const noexcept override { return "memory allocation failed"; }
@@ -119,9 +108,7 @@ protected:
     size_t		_bytesRequested;	///< Number of bytes requested by the failed allocation.
 };
 
-#if WITHOUT_LIBSTDCPP
 } // namespace std
 namespace ustl {
     typedef std::bad_alloc bad_alloc;
-#endif
 } // namespace ustl
