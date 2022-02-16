@@ -5,9 +5,9 @@
 
 #include "stdtest.h"
 
-typedef vector<int>			intvec_t;
-typedef const intvec_t&			rcintvec_t;
-typedef intvec_t::const_iterator	intiter_t;
+using intvec_t = vector<int>;
+using rcintvec_t = const intvec_t&;
+using intiter_t = intvec_t::const_iterator;
 
 static void printint (int i)
 {
@@ -71,7 +71,7 @@ static void TestBigCopy (const size_t size, const T magic)
     vector<T> vbig1 (size), vbig2 (size);
     fill (vbig1, magic);
     copy (vbig1.begin() + 1, vbig1.end(), vbig2.begin() + 1);	// offset to test prealignment loop
-    typedef typename vector<T>::const_iterator iter_t;
+    using iter_t = typename vector<T>::const_iterator;
     pair<iter_t, iter_t> iMismatch;
     iMismatch = mismatch (vbig1.begin() + 1, vbig1.end(), vbig2.begin() + 1);
     assert (iMismatch.second <= vbig2.end());
@@ -95,12 +95,8 @@ static void TestAlgorithms (void)
     PrintVector (v);
     v.assign (first, last);
 
-#if HAVE_CPP11
     pair<int,int> p1 (1,2);
     p1.swap (make_pair(3,4));
-#else
-    pair<int,int> p1 (3,4);
-#endif
     cout << "swap(pair<3,4>) = " << p1 << endl;
 
     cout << "copy(0,8,9)\n";
@@ -174,12 +170,8 @@ static void TestAlgorithms (void)
     TestBigFill<uint32_t> (64083, 0x41424344);
     cout << "fill 64083 float(0.4242) ";
     TestBigFill<float> (64083, 0x4242f);
-#if HAVE_INT64_T
     cout << "fill 64083 uint64_t(0x4142434445464748) ";
     TestBigFill<uint64_t> (64083, UINT64_C(0x4142434445464748));
-#else
-    cout << "No 64bit types available on this platform\n";
-#endif
 
     cout << "copy 64083 uint8_t(0x41) ";
     TestBigCopy<uint8_t> (64083, 0x41);
@@ -189,12 +181,8 @@ static void TestAlgorithms (void)
     TestBigCopy<uint32_t> (64083, 0x41424344);
     cout << "copy 64083 float(0.4242) ";
     TestBigCopy<float> (64083, 0.4242f);
-#if HAVE_INT64_T
     cout << "copy 64083 uint64_t(0x4142434445464748) ";
     TestBigCopy<uint64_t> (64083, UINT64_C(0x4142434445464748));
-#else
-    cout << "No 64bit types available on this platform\n";
-#endif
 
     cout << "generate(genint)\n";
     generate (v, &genint);
@@ -232,7 +220,7 @@ static void TestAlgorithms (void)
     toRemove.push_back (6);
     toRemove.push_back (15);
     toRemove.push_back (45);
-    typedef index_iterate<intvec_t::iterator, vector<uoff_t>::iterator> riiter_t;
+    using riiter_t = index_iterate<intvec_t::iterator, vector<uoff_t>::iterator>;
     riiter_t rfirst = index_iterator (v.begin(), toRemove.begin());
     riiter_t rlast = index_iterator (v.begin(), toRemove.end());
     remove (v, rfirst, rlast);
@@ -317,7 +305,6 @@ static void TestAlgorithms (void)
     cout.format ("min element is %d\n", *min_element (v.begin(), v.end()));
     v.assign (first, last);
 
-#if HAVE_CPP14
     auto a = 7, b = 4;
     auto mmr = minmax (a, b);
     cout.format ("minmax(7,4): min %d, max %d\n", mmr.first, mmr.second);
@@ -328,11 +315,6 @@ static void TestAlgorithms (void)
     mmer = minmax_element (v.begin(), v.end(), greater<int>());
     cout.format ("minmax_element(greater): min %d, max %d\n", *mmer.first, *mmer.second);
     v.assign (first, last);
-#else
-    cout << "minmax(7,4): min 4, max 7\n"
-		"minmax_element: min 1, max 18\n"
-		"minmax_element(greater): min 18, max 1\n";
-#endif
 
     cout.format ("clamp(4,1,9) = %d\n", clamp(4,1,9));
     cout.format ("clamp(14,1,9) = %d\n", clamp(14,1,9));

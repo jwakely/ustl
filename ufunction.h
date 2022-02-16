@@ -15,24 +15,24 @@ namespace ustl {
 /// \ingroup FunctorObjects
 template <typename Result>
 struct void_function {
-    typedef Result	result_type;
+    using result_type = Result;
 };
 
 /// \brief \p Result f (\p Arg) function abstract interface.
 /// \ingroup FunctorObjects
 template <typename Arg, typename Result>
 struct unary_function {
-    typedef Arg		argument_type;
-    typedef Result	result_type;
+    using argument_type = Arg;
+    using result_type = Result;
 };
 
 /// \brief \p Result f (\p Arg1, \p Arg2) function abstract interface.
 /// \ingroup FunctorObjects
 template <typename Arg1, typename Arg2, typename Result>
 struct binary_function {
-    typedef Arg1	first_argument_type;
-    typedef Arg2	second_argument_type;
-    typedef Result	result_type;
+    using first_argument_type = Arg1;
+    using second_argument_type = Arg2;
+    using result_type = Result;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -90,9 +90,9 @@ template <class T1, class T2> struct project2nd	: public binary_function<T1,T2,T
 template <typename Arg, typename Result>
 class pointer_to_unary_function : public unary_function<Arg,Result> {
 public:
-    typedef Arg		argument_type;
-    typedef Result	result_type;
-    typedef Result	(*pfunc_t)(Arg);
+    using argument_type = Arg;
+    using result_type = Result;
+    using pfunc_t = Result (*)(Arg);
 public:
     constexpr explicit	pointer_to_unary_function (pfunc_t pfn) : _pfn (pfn) {}
     constexpr result_type operator() (argument_type v) const { return _pfn(v); }
@@ -106,10 +106,10 @@ private:
 template <typename Arg1, typename Arg2, typename Result>
 class pointer_to_binary_function : public binary_function<Arg1,Arg2,Result> {
 public:
-    typedef Arg1	first_argument_type;
-    typedef Arg2	second_argument_type;
-    typedef Result	result_type;
-    typedef Result	(*pfunc_t)(Arg1, Arg2);
+    using first_argument_type = Arg1;
+    using second_argument_type = Arg2;
+    using result_type = Result;
+    using pfunc_t = Result (*)(Arg1, Arg2);
 public:
     constexpr explicit	pointer_to_binary_function (pfunc_t pfn) : _pfn (pfn) {}
     constexpr result_type operator() (first_argument_type v1, second_argument_type v2) const { return _pfn(v1, v2); }
@@ -144,8 +144,8 @@ template <class UnaryFunction>
 class unary_negate : public unary_function<typename UnaryFunction::argument_type,
 					   typename UnaryFunction::result_type> {
 public:
-    typedef typename UnaryFunction::argument_type	argument_type;
-    typedef typename UnaryFunction::result_type		result_type;
+    using argument_type = typename UnaryFunction::argument_type;
+    using result_type = typename UnaryFunction::result_type;
 public:
     constexpr explicit	unary_negate (UnaryFunction pfn) : _pfn (pfn) {}
     constexpr result_type operator() (argument_type v) const { return !_pfn(v); }
@@ -173,9 +173,9 @@ template <class BinaryFunction>
 class binder1st : public unary_function<typename BinaryFunction::second_argument_type,
 					typename BinaryFunction::result_type> {
 public:
-    typedef typename BinaryFunction::first_argument_type	arg1_t;
-    typedef typename BinaryFunction::second_argument_type	arg2_t;
-    typedef typename BinaryFunction::result_type		result_t;
+    using arg1_t = typename BinaryFunction::first_argument_type;
+    using arg2_t = typename BinaryFunction::second_argument_type;
+    using result_t = typename BinaryFunction::result_type;
 public:
     constexpr binder1st (const BinaryFunction& pfn, const arg1_t& v) : _pfn (pfn), _v(v) {}
     constexpr result_t operator()(arg2_t v2) const { return _pfn (_v, v2); }
@@ -192,9 +192,9 @@ template <class BinaryFunction>
 class binder2nd : public unary_function<typename BinaryFunction::first_argument_type,
 					typename BinaryFunction::result_type> {
 public:
-    typedef typename BinaryFunction::first_argument_type	arg1_t;
-    typedef typename BinaryFunction::second_argument_type	arg2_t;
-    typedef typename BinaryFunction::result_type		result_t;
+    using arg1_t = typename BinaryFunction::first_argument_type;
+    using arg2_t = typename BinaryFunction::second_argument_type;
+    using result_t = typename BinaryFunction::result_type;
 public:
     constexpr binder2nd (const BinaryFunction& pfn, const arg2_t& v) : _pfn (pfn), _v(v) {}
     constexpr result_t operator()(arg1_t v1) const { return _pfn (v1, _v); }
@@ -236,9 +236,9 @@ template <typename Operation1, typename Operation2>
 class unary_compose : public unary_function<typename Operation2::argument_type,
 					    typename Operation1::result_type> {
 public:
-    typedef typename Operation2::argument_type	arg_t;
-    typedef const arg_t&			rcarg_t;
-    typedef typename Operation1::result_type	result_t;
+    using arg_t = typename Operation2::argument_type;
+    using rcarg_t = const arg_t&;
+    using result_t = typename Operation1::result_type;
 public:
     constexpr unary_compose (const Operation1& f, const Operation2& g) : _f(f), _g(g) {}
     constexpr result_t operator() (rcarg_t x) const { return _f(_g(x)); }
@@ -265,9 +265,9 @@ template <typename Operation1, typename Operation2, typename Operation3>
 class binary_compose : public unary_function<typename Operation2::argument_type,
 					    typename Operation1::result_type> {
 public:
-    typedef typename Operation2::argument_type	arg_t;
-    typedef const arg_t&			rcarg_t;
-    typedef typename Operation1::result_type	result_t;
+    using arg_t = typename Operation2::argument_type;
+    using rcarg_t = const arg_t&;
+    using result_t = typename Operation1::result_type;
 public:
     constexpr binary_compose (const Operation1& f, const Operation2& g, const Operation3& h) : _f(f), _g(g), _h(h) {}
     constexpr result_t operator() (rcarg_t x) const { return _f(_g(x), _h(x)); }
@@ -294,7 +294,7 @@ compose2 (const Operation1& f, const Operation2& g, const Operation3& h)
     template <typename Ret, class T>						\
     class ClassName : public unary_function<ArgType,Ret> {			\
     public:									\
-	typedef Ret (T::*func_t) FuncType;					\
+	using func_t = Ret (T::*) FuncType;					\
     public:									\
 	constexpr explicit ClassName (func_t pf) : _pf (pf) {}			\
 	constexpr Ret operator() (ArgType p) const { return (p CallType _pf)(); }\
@@ -317,7 +317,7 @@ MEM_FUN_T(mem_fun_ref,	const_mem_fun_ref_t, 	const T&,	(void) const,	.*)
     template <class T, typename Ret, typename V> \
     class ClassName : public unary_function<V,void> { \
     public: \
-	typedef Ret (T::*func_t)(V) FuncType; \
+	using func_t = Ret (T::*)(V) FuncType; \
     public: \
 	constexpr	ClassName (HostType t, func_t pf) : _t (t), _pf (pf) {} \
 	constexpr Ret	operator() (V v) const { return (_t->*_pf)(v); } \
@@ -347,9 +347,9 @@ EXT_MEM_FUN_T(const_ext_mem_fun_t,	const T*,	const)
     template <typename Function, class T, typename VT>					\
     class FunctorName##_t : public BaseClass {						\
     public:										\
-	typedef ArgType				argument_type;				\
-	typedef typename Function::result_type	result_type;				\
-	typedef VarType				mem_var_ptr_t;				\
+	using argument_type = ArgType;							\
+	using result_type = typename Function::result_type;				\
+	using mem_var_ptr_t = VarType;							\
     public:										\
 	constexpr FunctorName##_t (mem_var_ptr_t pv, Function pfn) : _pv(pv), _pfn(pfn) {}	\
 	constexpr result_type operator() CallImpl						\
@@ -429,8 +429,8 @@ mem_var_less (const VT T::*mvp)
     template <typename T, typename Function>					\
     class ClassName : public BaseClass {					\
     public:									\
-	typedef ArgType*			argument_type;			\
-	typedef typename Function::result_type	result_type;			\
+	using argument_type = ArgType*;						\
+	using result_type = typename Function::result_type;			\
     public:									\
 	constexpr		ClassName (Function pfn) : _pfn (pfn) {}	\
 	constexpr result_type	operator() CallImpl				\

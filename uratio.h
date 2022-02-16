@@ -6,7 +6,6 @@
 #pragma once
 #include "sostream.h"
 
-#if HAVE_CPP11	// ratio requires constexpr
 namespace ustl {
 
 template <intmax_t N, intmax_t D = 1>
@@ -111,4 +110,3 @@ using atto	= ratio<1, 1000000000000000000>;
 
 //}}}-------------------------------------------------------------------
 } // namespace ustl
-#endif // HAVE_CPP11

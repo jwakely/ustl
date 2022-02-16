@@ -45,10 +45,8 @@ public:
 #if HAVE_THREE_CHAR_TYPES
     inline void			iwrite (signed char v)		{ iwrite (static_cast<char>(v)); }
 #endif
-#if HAVE_LONG_LONG
     inline void			iwrite (long long v)		{ iformat (v); }
     inline void			iwrite (unsigned long long v)	{ iformat (v); }
-#endif
     inline size_type		max_size (void) const		{ return _buffer.max_size(); }
     inline ostringstream&	put (char c)			{ iwrite (uint8_t(c)); return *this; }
     int				vformat (const char* fmt, va_list args);
@@ -102,10 +100,8 @@ PRINTF_TYPESTRING_SPEC (unsigned long,	"lu")
 PRINTF_TYPESTRING_SPEC (float,		"f")
 PRINTF_TYPESTRING_SPEC (double,		"lf")
 PRINTF_TYPESTRING_SPEC (long double,	"Lf")
-#if HAVE_LONG_LONG
 PRINTF_TYPESTRING_SPEC (long long,	"lld")
 PRINTF_TYPESTRING_SPEC (unsigned long long, "llu")
-#endif
 #undef PRINTF_TYPESTRING_SPEC
 
 template <typename T>
@@ -134,10 +130,10 @@ template <typename T> struct integral_text_object_writer {
 };
 template <typename T>
 inline ostringstream& operator<< (ostringstream& os, const T& v) {
-    typedef typename tm::Select <tm::TypeTraits<T>::isFundamental
+    using object_writer_t = typename tm::Select <tm::TypeTraits<T>::isFundamental
 					|| tm::TypeTraits<T>::isPointer
 					|| tm::Conversion<T,long>::exists,
-	integral_text_object_writer<T>, object_text_writer<T> >::Result object_writer_t;
+		integral_text_object_writer<T>, object_text_writer<T> >::Result;
     object_writer_t()(os, v);
     return os;
 }

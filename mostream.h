@@ -106,12 +106,12 @@ private:
 template <typename T, typename Stream = ostream>
 class ostream_iterator {
 public:
-    typedef T			value_type;
-    typedef ptrdiff_t		difference_type;
-    typedef value_type*		pointer;
-    typedef value_type&		reference;
-    typedef typename Stream::size_type	size_type;
-    typedef output_iterator_tag	iterator_category;
+    using value_type		= T;
+    using difference_type	= ptrdiff_t;
+    using pointer		= value_type*;
+    using reference		= value_type&;
+    using size_type		= typename Stream::size_type;
+    using iterator_category	= output_iterator_tag;
 public:
     constexpr explicit		ostream_iterator (Stream& os)
 				    : _os (os) {}
@@ -134,8 +134,8 @@ private:
 
 //----------------------------------------------------------------------
 
-typedef ostream_iterator<utf8subchar_t> ostream_iterator_for_utf8;
-typedef utf8out_iterator<ostream_iterator_for_utf8> utf8ostream_iterator;
+using ostream_iterator_for_utf8 = ostream_iterator<utf8subchar_t>;
+using utf8ostream_iterator = utf8out_iterator<ostream_iterator_for_utf8>;
 
 /// Returns a UTF-8 adaptor writing to \p os.
 inline utf8ostream_iterator utf8out (ostream& os)
@@ -233,8 +233,8 @@ template <typename T> struct integral_object_writer {
 };
 template <typename T>
 inline ostream& operator<< (ostream& os, const T& v) {
-    typedef typename tm::Select <numeric_limits<T>::is_integral,
-	integral_object_writer<T>, object_writer<T> >::Result object_writer_t;
+    using object_writer_t = typename tm::Select <numeric_limits<T>::is_integral,
+	integral_object_writer<T>, object_writer<T> >::Result;
     object_writer_t()(os, v);
     return os;
 }

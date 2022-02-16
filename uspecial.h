@@ -78,7 +78,7 @@ void pair<T1,T2>::text_write (ostringstream& os) const
 /// \brief Takes a pair and returns pair.first
 /// This is an extension, available in uSTL and the SGI STL.
 template <typename Pair> struct select1st : public unary_function<Pair,typename Pair::first_type> {
-    typedef typename Pair::first_type result_type;
+    using result_type = typename Pair::first_type;
     inline const result_type&	operator()(const Pair& a) const { return a.first; }
     inline result_type&		operator()(Pair& a) const { return a.first; }
 };
@@ -86,7 +86,7 @@ template <typename Pair> struct select1st : public unary_function<Pair,typename 
 /// \brief Takes a pair and returns pair.second
 /// This is an extension, available in uSTL and the SGI STL.
 template <typename Pair> struct select2nd : public unary_function<Pair,typename Pair::second_type> {
-    typedef typename Pair::second_type result_type;
+    using result_type = typename Pair::second_type;
     inline const result_type&	operator()(const Pair& a) const { return a.second; }
     inline result_type&		operator()(Pair& a) const { return a.second; }
 };
@@ -98,7 +98,7 @@ template <typename Container>
 inline pair<typename Container::iterator, typename Container::iterator>
 unconst (const pair<typename Container::const_iterator, typename Container::const_iterator>& i, Container&)
 {
-    typedef pair<typename Container::iterator, typename Container::iterator> unconst_pair_t;
+    using unconst_pair_t = pair<typename Container::iterator, typename Container::iterator>;
     return *noalias_cast<unconst_pair_t*>(&i);
 }
 
@@ -107,7 +107,7 @@ unconst (const pair<typename Container::const_iterator, typename Container::cons
 template <typename T>
 inline size_t stream_align_of (const vector<T>&)
 {
-    typedef typename vector<T>::written_size_type written_size_type;
+    using written_size_type = typename vector<T>::written_size_type;
     return stream_align_of (written_size_type());
 }
 
@@ -126,7 +126,7 @@ void bitset<Size>::text_read (istringstream& is)
 
 template <size_t N, typename T>
 struct numeric_limits<tuple<N,T> > {
-    typedef numeric_limits<T> value_limits;
+    using value_limits = numeric_limits<T>;
     static inline tuple<N,T> min (void)	{ tuple<N,T> v; fill (v, value_limits::min()); return v; }
     static inline tuple<N,T> max (void)	{ tuple<N,T> v; fill (v, value_limits::max()); return v; }
     static const bool is_signed = value_limits::is_signed;
@@ -168,7 +168,7 @@ void matrix<NX,NY,T>::text_write (ostringstream& os) const
 
 //----{ long4grain }----------------------------------------------------
 
-#if SIZE_OF_LONG == 8 && HAVE_INT64_T
+#if SIZE_OF_LONG == 8
 // Helper class for long4grain and ptr4grain wrappers.
 class _long4grain {
 public:
@@ -218,7 +218,7 @@ inline _long4grain& ptr4grain (T*& p)				{ asm("":"+m"(p)); return *noalias_cast
 /// Wrap pointer values to allow writing them on 4-grain even on 64bit platforms.
 template <typename T>
 inline const _long4grain ptr4grain (const T* const& p)		{ return _long4grain(uintptr_t(p)); }
-#else	// if not SIZE_OF_LONG == 8 && HAVE_INT64_T
+#else	// if not SIZE_OF_LONG == 8
 inline unsigned long& long4grain (unsigned long& v)		{ return v; }
 inline const unsigned long& long4grain (const unsigned long& v)	{ return v; }
 template <typename T> inline T*& ptr4grain (T*& p)		{ return p; }
@@ -229,7 +229,7 @@ template <typename T> inline const T* const& ptr4grain (const T* const& p) { ret
 
 } // namespace ustl
 
-#if SIZE_OF_LONG == 8 && HAVE_INT64_T
+#if SIZE_OF_LONG == 8
 ALIGNOF (ustl::_long4grain, 4)
 #endif
 ALIGNOF (ustl::CBacktrace, sizeof(void*))

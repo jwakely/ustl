@@ -59,13 +59,7 @@ size_t error_message::stream_size (void) const noexcept
 
 /// Initializes the empty object. \p operation is the function that returned the error code.
 system_error::system_error (const char* operation) noexcept
-#if HAVE_CPP14
 : system_error (errno, system_category(), operation)
-#else
-: runtime_error (strerror (errno))
-,_operation (operation)
-,_errno (errno)
-#endif
 {
     set_format (xfmt_SystemError);
 }

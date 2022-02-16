@@ -147,14 +147,6 @@ public:
 class system_error : public runtime_error {
 public:
     explicit		system_error (const char* operation) noexcept;
-    inline virtual const char*	what (void) const noexcept override { return "system error"; }
-    inline virtual const char*	name (void) const noexcept override { return _operation.c_str(); }
-    virtual void	read (istream& is) override;
-    virtual void	write (ostream& os) const override;
-    virtual size_t	stream_size (void) const noexcept override;
-    inline int		Errno (void) const	{ return _errno; }
-    inline const char*	Operation (void) const	{ return _operation.c_str(); }
-#if HAVE_CPP14
 			system_error (error_code ec, const char* operation) noexcept
 			    : runtime_error (ec.message()),_operation(operation),_errno(ec.value()) {}
     inline              system_error (error_code ec, const string& operation) noexcept
@@ -163,14 +155,20 @@ public:
 			    : system_error (error_code(ec,ecat), operation) {}
     inline              system_error (int ec, const error_category& ecat, const string& operation)
 			    : system_error (ec, ecat, operation.c_str()) {}
+    inline virtual const char*	what (void) const noexcept override { return "system error"; }
+    inline virtual const char*	name (void) const noexcept override { return _operation.c_str(); }
+    virtual void	read (istream& is) override;
+    virtual void	write (ostream& os) const override;
+    virtual size_t	stream_size (void) const noexcept override;
+    inline int		Errno (void) const	{ return _errno; }
+    inline const char*	Operation (void) const	{ return _operation.c_str(); }
     inline auto		code (void) const	{ return error_code (_errno, system_category()); }
-#endif
 private:
     string		_operation;	///< Name of the failed operation.
     int			_errno;		///< Error code returned by the failed operation.
 };
 
-typedef system_error libc_exception;
+using libc_exception = system_error;
 
 /// \class file_exception uexception.h ustl.h
 /// \ingroup Exceptions

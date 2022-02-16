@@ -45,7 +45,7 @@ public:
     inline int		fcntl (const char* rname, int request, int argument)	{ return fstream::fcntl (rname, request, long(argument)); }
     inline int		fcntl (const char* rname, int request, void* argument)	{ return fstream::fcntl (rname, request, intptr_t(argument)); }
     void		set_nonblock (bool v = true) noexcept;
-#if HAVE_SYS_MMAN_H
+#if __has_include(<sys/mman.h>)
     memlink		mmap (off_t n, off_t offset = 0);
     void		munmap (memlink& l);
     void		msync (memlink& l);

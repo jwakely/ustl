@@ -57,7 +57,7 @@ void exception::text_write (ostringstream& os) const noexcept
 
 //----------------------------------------------------------------------
 
-#if HAVE_CXXABI_H && !NDEBUG
+#ifndef NDEBUG
 extern "C" char* __cxa_demangle (const char* mangled_name, char* output_buffer, size_t* length, int* status);
 #endif
 
@@ -69,7 +69,7 @@ extern "C" char* __cxa_demangle (const char* mangled_name, char* output_buffer, 
 const char* demangle_type_name (char* buf, size_t bufSize, size_t* pdmSize) noexcept
 {
     size_t bl = strlen (buf);
-#if HAVE_CXXABI_H && !NDEBUG
+#ifndef NDEBUG
     char dmname [256];
     size_t sz = VectorSize(dmname);
     int bFailed;

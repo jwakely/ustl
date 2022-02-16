@@ -10,7 +10,7 @@
 #include "../unumeric.h"
 using namespace ustl;
 
-typedef void (*stdtestfunc_t)(void);
+using stdtestfunc_t = void (*)(void);
 
 int StdTestHarness (stdtestfunc_t testFunction);
 

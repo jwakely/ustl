@@ -444,8 +444,8 @@ constexpr int qsort_adapter (const void* p1, const void* p2)
 template <typename RandomAccessIterator, typename Compare>
 void sort (RandomAccessIterator first, RandomAccessIterator last, Compare)
 {
-    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
-    typedef typename iterator_traits<RandomAccessIterator>::const_pointer const_pointer;
+    using value_type = typename iterator_traits<RandomAccessIterator>::value_type;
+    using const_pointer = typename iterator_traits<RandomAccessIterator>::const_pointer;
     qsort (first, distance (first, last), sizeof(value_type),
 	   &qsort_adapter<const_pointer, Compare>);
 }
@@ -456,7 +456,7 @@ void sort (RandomAccessIterator first, RandomAccessIterator last, Compare)
 template <typename RandomAccessIterator>
 inline void sort (RandomAccessIterator first, RandomAccessIterator last)
 {
-    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
+    using value_type = typename iterator_traits<RandomAccessIterator>::value_type;
     sort (first, last, less<value_type>());
 }
 
@@ -479,7 +479,7 @@ constexpr void stable_sort (RandomAccessIterator first, RandomAccessIterator las
 template <typename RandomAccessIterator>
 inline constexpr void stable_sort (RandomAccessIterator first, RandomAccessIterator last)
 {
-    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
+    using value_type = typename iterator_traits<RandomAccessIterator>::value_type;
     stable_sort (first, last, less<value_type>());
 }
 
@@ -488,7 +488,7 @@ inline constexpr void stable_sort (RandomAccessIterator first, RandomAccessItera
 template <typename ForwardIterator1, typename ForwardIterator2>
 inline constexpr ForwardIterator1 search (ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2, ForwardIterator2 last2)
 {
-    typedef typename iterator_traits<ForwardIterator1>::value_type value_type;
+    using value_type = typename iterator_traits<ForwardIterator1>::value_type;
     return search (first1, last1, first2, last2, equal_to<value_type>());
 }
 
@@ -497,7 +497,7 @@ inline constexpr ForwardIterator1 search (ForwardIterator1 first1, ForwardIterat
 template <typename ForwardIterator1, typename ForwardIterator2>
 inline constexpr ForwardIterator1 find_end (ForwardIterator1 first1, ForwardIterator1 last1, ForwardIterator2 first2, ForwardIterator2 last2)
 {
-    typedef typename iterator_traits<ForwardIterator1>::value_type value_type;
+    using value_type = typename iterator_traits<ForwardIterator1>::value_type;
     return find_end (first1, last1, first2, last2, equal_to<value_type>());
 }
 
@@ -506,7 +506,7 @@ inline constexpr ForwardIterator1 find_end (ForwardIterator1 first1, ForwardIter
 template <typename Iterator, typename T>
 inline constexpr Iterator search_n (Iterator first, Iterator last, size_t count, const T& value)
 {
-    typedef typename iterator_traits<Iterator>::value_type value_type;
+    using value_type = typename iterator_traits<Iterator>::value_type;
     return search_n (first, last, count, value, equal_to<value_type>());
 }
 
@@ -515,7 +515,7 @@ inline constexpr Iterator search_n (Iterator first, Iterator last, size_t count,
 template <typename InputIterator, typename ForwardIterator>
 inline constexpr InputIterator find_first_of (InputIterator first1, InputIterator last1, ForwardIterator first2, ForwardIterator last2)
 {
-    typedef typename iterator_traits<InputIterator>::value_type value_type;
+    using value_type = typename iterator_traits<InputIterator>::value_type;
     return find_first_of (first1, last1, first2, last2, equal_to<value_type>());
 }
 
@@ -525,7 +525,7 @@ inline constexpr InputIterator find_first_of (InputIterator first1, InputIterato
 template <typename InputIterator1, typename InputIterator2>
 inline constexpr bool includes (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2)
 {
-    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    using value_type = typename iterator_traits<InputIterator1>::value_type;
     return includes (first1, last1, first2, last2, less<value_type>());
 }
 
@@ -538,7 +538,7 @@ inline constexpr bool includes (InputIterator1 first1, InputIterator1 last1, Inp
 template <typename InputIterator1, typename InputIterator2, typename OutputIterator>
 inline constexpr OutputIterator set_union (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, OutputIterator result)
 {
-    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    using value_type = typename iterator_traits<InputIterator1>::value_type;
     return set_union (first1, last1, first2, last2, result, less<value_type>());
 }
 
@@ -547,7 +547,7 @@ inline constexpr OutputIterator set_union (InputIterator1 first1, InputIterator1
 template <typename InputIterator1, typename InputIterator2, typename OutputIterator>
 inline constexpr OutputIterator set_intersection (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, OutputIterator result)
 {
-    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    using value_type = typename iterator_traits<InputIterator1>::value_type;
     return set_intersection (first1, last1, first2, last2, result, less<value_type>());
 }
 
@@ -556,7 +556,7 @@ inline constexpr OutputIterator set_intersection (InputIterator1 first1, InputIt
 template <typename InputIterator1, typename InputIterator2, typename OutputIterator>
 inline constexpr OutputIterator set_difference (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, OutputIterator result)
 {
-    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    using value_type = typename iterator_traits<InputIterator1>::value_type;
     return set_difference (first1, last1, first2, last2, result, less<value_type>());
 }
 
@@ -565,7 +565,7 @@ inline constexpr OutputIterator set_difference (InputIterator1 first1, InputIter
 template <typename InputIterator1, typename InputIterator2, typename OutputIterator>
 inline constexpr OutputIterator set_symmetric_difference (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2, OutputIterator result)
 {
-    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    using value_type = typename iterator_traits<InputIterator1>::value_type;
     return set_symmetric_difference (first1, last1, first2, last2, result, less<value_type>());
 }
 
@@ -574,7 +574,7 @@ inline constexpr OutputIterator set_symmetric_difference (InputIterator1 first1,
 template <typename ForwardIterator>
 inline constexpr bool is_sorted (ForwardIterator first, ForwardIterator last)
 {
-    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
+    using value_type = typename iterator_traits<ForwardIterator>::value_type;
     return is_sorted (first, last, less<value_type>());
 }
 
@@ -583,7 +583,7 @@ inline constexpr bool is_sorted (ForwardIterator first, ForwardIterator last)
 template <typename InputIterator1, typename InputIterator2>
 inline constexpr bool lexicographical_compare (InputIterator1 first1, InputIterator1 last1, InputIterator2 first2, InputIterator2 last2)
 {
-    typedef typename iterator_traits<InputIterator1>::value_type value_type;
+    using value_type = typename iterator_traits<InputIterator1>::value_type;
     return lexicographical_compare (first1, last1, first2, last2, less<value_type>());
 }
 
@@ -593,7 +593,7 @@ inline constexpr bool lexicographical_compare (InputIterator1 first1, InputItera
 template <typename BidirectionalIterator>
 inline constexpr bool next_permutation (BidirectionalIterator first, BidirectionalIterator last)
 {
-    typedef typename iterator_traits<BidirectionalIterator>::value_type value_type;
+    using value_type = typename iterator_traits<BidirectionalIterator>::value_type;
     return next_permutation (first, last, less<value_type>());
 }
 
@@ -603,7 +603,7 @@ inline constexpr bool next_permutation (BidirectionalIterator first, Bidirection
 template <typename BidirectionalIterator>
 inline constexpr bool prev_permutation (BidirectionalIterator first, BidirectionalIterator last)
 {
-    typedef typename iterator_traits<BidirectionalIterator>::value_type value_type;
+    using value_type = typename iterator_traits<BidirectionalIterator>::value_type;
     return prev_permutation (first, last, less<value_type>());
 }
 
@@ -620,7 +620,7 @@ inline constexpr T clamp (const T& v, const T& l, const T& h)
 template <typename ForwardIterator>
 inline constexpr ForwardIterator max_element (ForwardIterator first, ForwardIterator last)
 {
-    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
+    using value_type = typename iterator_traits<ForwardIterator>::value_type;
     return max_element (first, last, less<value_type>());
 }
 
@@ -629,11 +629,9 @@ inline constexpr ForwardIterator max_element (ForwardIterator first, ForwardIter
 template <typename ForwardIterator>
 inline constexpr ForwardIterator min_element (ForwardIterator first, ForwardIterator last)
 {
-    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
+    using value_type = typename iterator_traits<ForwardIterator>::value_type;
     return min_element (first, last, less<value_type>());
 }
-
-#if HAVE_CPP14
 
 /// Returns min,max pair of the argument
 template <typename T>
@@ -670,7 +668,6 @@ constexpr auto minmax (std::initializer_list<T> l, Compare comp)
     }
     return r;
 }
-#endif
 
 template <typename ForwardIterator>
 constexpr pair<ForwardIterator,ForwardIterator> minmax_element (ForwardIterator first, ForwardIterator last)
@@ -703,7 +700,7 @@ constexpr pair<ForwardIterator,ForwardIterator> minmax_element (ForwardIterator 
 template <typename RandomAccessIterator>
 inline constexpr void partial_sort (RandomAccessIterator first, RandomAccessIterator middle, RandomAccessIterator last)
 {
-    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
+    using value_type = typename iterator_traits<RandomAccessIterator>::value_type;
     partial_sort (first, middle, last, less<value_type>());
 }
 
@@ -724,7 +721,7 @@ inline constexpr void nth_element (RandomAccessIterator first, RandomAccessItera
 template <typename InputIterator, typename RandomAccessIterator>
 inline constexpr RandomAccessIterator partial_sort_copy (InputIterator first, InputIterator last, RandomAccessIterator result_first, RandomAccessIterator result_last)
 {
-    typedef typename iterator_traits<InputIterator>::value_type value_type;
+    using value_type = typename iterator_traits<InputIterator>::value_type;
     return partial_sort_copy (first, last, result_first, result_last, less<value_type>());
 }
 

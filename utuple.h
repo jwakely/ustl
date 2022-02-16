@@ -17,18 +17,19 @@ namespace ustl {
 template <size_t N, typename T>
 class tuple {
 public:
-    typedef T						value_type;
-    typedef size_t					size_type;
-    typedef value_type*					pointer;
-    typedef const value_type*				const_pointer;
-    typedef value_type&					reference;
-    typedef const value_type&				const_reference;
-    typedef pointer					iterator;
-    typedef const_pointer				const_iterator;
-    typedef ::ustl::reverse_iterator<iterator>		reverse_iterator;
-    typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
-    typedef pair<iterator,iterator>			range_t;
-    typedef pair<const_iterator,const_iterator>		const_range_t;
+    using value_type		= T;
+    using size_type		= size_t;
+    using pointer		= value_type*;
+    using const_pointer		= const value_type*;
+    using reference		= value_type&;
+    using const_reference	= const value_type&;
+    using iterator		= pointer;
+    using const_iterator	= const_pointer;
+    using reverse_iterator	= ::ustl::reverse_iterator<iterator>;
+    using const_reverse_iterator = ::ustl::reverse_iterator<const_iterator>;
+    using range_t		= pair<iterator,iterator>;
+    using const_range_t		= pair<const_iterator,const_iterator>;
+    using initlist_t		= std::initializer_list<value_type>;
 public:
     template <typename T2>
     inline			tuple (const tuple<N,T2>& t);
@@ -39,6 +40,8 @@ public:
     inline			tuple (const_reference v0, const_reference v1);
     inline			tuple (const_reference v0, const_reference v1, const_reference v2);
     inline			tuple (const_reference v0, const_reference v1, const_reference v2, const_reference v3);
+    inline			tuple (initlist_t v)			{ assign (v); }
+    inline tuple&		operator= (initlist_t v)		{ return assign(v); }
     inline iterator		begin (void)			{ return _v; }
     inline const_iterator	begin (void) const		{ return _v; }
     inline iterator		end (void)			{ return begin() + N; }
@@ -69,17 +72,6 @@ public:
 				    { tuple result; for (uoff_t i = 0; i < N; ++ i) result[i] = _v[i] * v; return result; }
     inline tuple		operator/ (const_reference v) const
 				    { tuple result; for (uoff_t i = 0; i < N; ++ i) result[i] = _v[i] / v; return result; }
-    inline void			swap (tuple<N,T>& v)
-				    { for (uoff_t i = 0; i < N; ++ i) ::ustl::swap (_v[i], v._v[i]); }
-    inline void			read (istream& is)			{ nr_container_read (is, *this); }
-    inline void			write (ostream& os) const		{ nr_container_write (os, *this); }
-    inline void			text_write (ostringstream& os) const	{ container_text_write (os, *this); }
-    inline size_t		stream_size (void) const		{ return nr_container_stream_size (*this); }
-#if HAVE_CPP11
-    using initlist_t = std::initializer_list<value_type>;
-    inline			tuple (initlist_t v)			{ assign (v); }
-    inline tuple&		assign (initlist_t v);
-    inline tuple&		operator= (initlist_t v)		{ return assign(v); }
     inline tuple&		operator+= (initlist_t v)
 				    { for (uoff_t i = 0; i < min(N,v.size()); ++ i) _v[i] += v.begin()[i]; return *this; }
     inline tuple&		operator-= (initlist_t v)
@@ -88,7 +80,13 @@ public:
 				    { for (uoff_t i = 0; i < min(N,v.size()); ++ i) _v[i] *= v.begin()[i]; return *this; }
     inline tuple&		operator/= (initlist_t v)
 				    { for (uoff_t i = 0; i < min(N,v.size()); ++ i) _v[i] /= v.begin()[i]; return *this; }
-#endif
+    inline tuple&		assign (initlist_t v);
+    inline void			swap (tuple<N,T>& v)
+				    { for (uoff_t i = 0; i < N; ++ i) ::ustl::swap (_v[i], v._v[i]); }
+    inline void			read (istream& is)			{ nr_container_read (is, *this); }
+    inline void			write (ostream& os) const		{ nr_container_write (os, *this); }
+    inline void			text_write (ostringstream& os) const	{ container_text_write (os, *this); }
+    inline size_t		stream_size (void) const		{ return nr_container_stream_size (*this); }
 private:
     T				_v [N];
 };
@@ -144,7 +142,6 @@ inline tuple<N,T>::tuple (const_reference v0, const_reference v1, const_referenc
     fill_n (_v+3, N-3, v3);
 }
 
-#if HAVE_CPP11
 template <size_t N, typename T>
 inline tuple<N,T>& tuple<N,T>::assign (initlist_t v)
 {
@@ -153,7 +150,6 @@ inline tuple<N,T>& tuple<N,T>::assign (initlist_t v)
     fill_n (begin()+isz, N-isz, T());
     return *this;
 }
-#endif
 
 template <size_t N, typename T>
 template <typename T2>
@@ -248,14 +244,14 @@ SSE_TUPLE_SPECS(4,int32_t)
 SSE_TUPLE_SPECS(4,uint32_t)
 #undef SSE_TUPLE_SPECS
 #endif
-#if SIZE_OF_LONG == 8 && __GNUC__
+#if SIZE_OF_LONG == 8
 #define LONG_TUPLE_SPECS(n,type)		\
 template <> inline tuple<n,type>::tuple (void)	\
 { asm("":"+m"(_v[0])::"memory");		\
-  *noalias_cast<long*>(_v) = 0; }				\
+  *noalias_cast<uint64_t*>(_v) = 0; }				\
 template<> inline void tuple<n,type>::swap (tuple<n,type>& v)	\
 { asm("":"+m"(_v[0]),"+m"(v._v[0])::"memory");			\
-  iter_swap (noalias_cast<long*>(_v), noalias_cast<long*>(v._v));	\
+  iter_swap (noalias_cast<uint64_t*>(_v), noalias_cast<uint64_t*>(v._v));	\
   asm("":"+m"(_v[0]),"+m"(v._v[0])::"memory");			\
 }
 LONG_TUPLE_SPECS(2,float)

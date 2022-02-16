@@ -55,8 +55,6 @@ UNVOID_DISTANCE(const,)
 //}}}-------------------------------------------------------------------
 //{{{ begin, end, size
 
-#if HAVE_CPP11
-
 // Array range accessors
 template <typename T>
 inline constexpr auto begin (T& c) -> decltype(c.begin())
@@ -126,44 +124,27 @@ inline constexpr T* VectorEnd (T (&a)[N]) noexcept
 #define VectorRange(v)	::ustl::begin(v), ::ustl::end(v)
 #define foreach(type,i,ctr)	for (type i = ::ustl::begin(ctr); i != ::ustl::end(ctr); ++i)
 #define eachfor(type,i,ctr)	for (type i = ::ustl::rbegin(ctr); i != ::ustl::rend(ctr); ++i)
-#else
-
-/// Returns the end() for a static vector
-template <typename T, size_t N> inline constexpr T* VectorEnd (T(&a)[N]) { return &a[N]; }
-
-/// Expands into a ptr,size expression for the given static vector; useful as link arguments.
-#define VectorBlock(v)	&(v)[0], VectorSize(v)
-/// Expands into a begin,end expression for the given static vector; useful for algorithm arguments.
-#define VectorRange(v)	&(v)[0], VectorEnd(v)
-
-/// Shorthand for container iteration.
-#define foreach(type,i,ctr)	for (type i = (ctr).begin(); i != (ctr).end(); ++ i)
-/// Shorthand for container reverse iteration.
-#define eachfor(type,i,ctr)	for (type i = (ctr).rbegin(); i != (ctr).rend(); ++ i)
-
-#endif // HAVE_CPP11
 
 /// Returns the size of \p n elements of size \p T
 template <typename T> inline constexpr size_t size_of_elements (size_t n, const T*) { return n * sizeof(T); }
-#if __GNUC__
-    /// Returns the number of elements in a static vector
-    #define VectorSize(v)	(sizeof(v) / sizeof(*v))
-#else
-    // Old compilers will not be able to evaluate *v on an empty vector.
-    // The tradeoff here is that VectorSize will not be able to measure arrays of local structs.
-    #define VectorSize(v)	(sizeof(v) / ustl::size_of_elements(1, v))
-#endif
+/// Returns the number of elements in a static vector
+template <typename T>
+constexpr auto VectorSize (const T&)
+    { return 0; }
+template <typename T, size_t N>
+constexpr auto VectorSize (const T (&)[N])
+    { return N; }
 
 //}}}-------------------------------------------------------------------
 //{{{ iterator
 
 template <typename Category, typename T, typename Distance = ptrdiff_t, typename Pointer = T*, typename Reference = T&>
 struct iterator {
-    typedef T		value_type;
-    typedef Distance	difference_type;
-    typedef Pointer	pointer;
-    typedef Reference	reference;
-    typedef Category	iterator_category;
+    using value_type		= T;
+    using difference_type	= Distance;
+    using pointer		= Pointer;
+    using reference		= Reference;
+    using iterator_category	= Category;
 };
 
 //}}}-------------------------------------------------------------------
@@ -180,57 +161,57 @@ struct random_access_iterator_tag {};
 ///
 template <typename Iterator>
 struct iterator_traits {
-    typedef typename Iterator::value_type	value_type;
-    typedef typename Iterator::difference_type	difference_type;
-    typedef typename Iterator::pointer		pointer;
-    typedef typename Iterator::reference	reference;
-    typedef typename Iterator::iterator_category iterator_category;
+    using value_type		= typename Iterator::value_type;
+    using difference_type	= typename Iterator::difference_type;
+    using pointer		= typename Iterator::pointer;
+    using reference		= typename Iterator::reference;
+    using iterator_category	= typename Iterator::iterator_category;
 };
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 template <typename T>
 struct iterator_traits<T*> {
-    typedef T		value_type;
-    typedef ptrdiff_t	difference_type;
-    typedef const T*	const_pointer;
-    typedef T*		pointer;
-    typedef const T&	const_reference;
-    typedef T&		reference;
-    typedef random_access_iterator_tag	iterator_category;
+    using value_type		= T;
+    using difference_type	= ptrdiff_t;
+    using const_pointer		= const T*;
+    using pointer		= T*;
+    using const_reference	= const T&;
+    using reference		= T&;
+    using iterator_category	= random_access_iterator_tag;
 };
 
 template <typename T>
 struct iterator_traits<const T*> {
-    typedef T		value_type;
-    typedef ptrdiff_t	difference_type;
-    typedef const T*	const_pointer;
-    typedef const T*	pointer;
-    typedef const T&	const_reference;
-    typedef const T&	reference;
-    typedef random_access_iterator_tag	iterator_category;
+    using value_type		= T;
+    using difference_type	= ptrdiff_t;
+    using const_pointer		= const T*;
+    using pointer		= const T*;
+    using const_reference	= const T&;
+    using reference		= const T&;
+    using iterator_category	= random_access_iterator_tag;
 };
 
 template <>
 struct iterator_traits<void*> {
-    typedef uint8_t		value_type;
-    typedef ptrdiff_t		difference_type;
-    typedef const void*		const_pointer;
-    typedef void*		pointer;
-    typedef const value_type&	const_reference;
-    typedef value_type&		reference;
-    typedef random_access_iterator_tag	iterator_category;
+    using value_type		= uint8_t;
+    using difference_type	= ptrdiff_t;
+    using const_pointer		= const void*;
+    using pointer		= void*;
+    using const_reference	= const value_type&;
+    using reference		= value_type&;
+    using iterator_category	= random_access_iterator_tag;
 };
 
 template <>
 struct iterator_traits<const void*> {
-    typedef uint8_t		value_type;
-    typedef ptrdiff_t		difference_type;
-    typedef const void*		const_pointer;
-    typedef const void*		pointer;
-    typedef const value_type&	const_reference;
-    typedef const value_type&	reference;
-    typedef random_access_iterator_tag	iterator_category;
+    using value_type		= uint8_t;
+    using difference_type	= ptrdiff_t;
+    using const_pointer		= const void*;
+    using pointer		= const void*;
+    using const_reference	= const value_type&;
+    using reference		= const value_type&;
+    using iterator_category	= random_access_iterator_tag;
 };
 
 #endif
@@ -245,11 +226,11 @@ struct iterator_traits<const void*> {
 template <typename Iterator>
 class reverse_iterator {
 public:
-    typedef typename iterator_traits<Iterator>::value_type	value_type;
-    typedef typename iterator_traits<Iterator>::difference_type	difference_type;
-    typedef typename iterator_traits<Iterator>::pointer		pointer;
-    typedef typename iterator_traits<Iterator>::reference	reference;
-    typedef typename iterator_traits<Iterator>::iterator_category iterator_category;
+    using value_type		= typename iterator_traits<Iterator>::value_type;
+    using difference_type	= typename iterator_traits<Iterator>::difference_type;
+    using pointer		= typename iterator_traits<Iterator>::pointer;
+    using reference		= typename iterator_traits<Iterator>::reference;
+    using iterator_category	= typename iterator_traits<Iterator>::iterator_category;
 public:
     constexpr			reverse_iterator (void) : _i() {}
     constexpr explicit		reverse_iterator (Iterator iter) : _i (iter) {}
@@ -278,8 +259,6 @@ constexpr reverse_iterator<Iterator> make_reverse_iterator (Iterator i)
 
 //}}}-------------------------------------------------------------------
 //{{{ move_iterator
-
-#if HAVE_CPP11
 
 /// \class move_iterator uiterator.h ustl.h
 /// \ingroup IteratorAdaptors
@@ -319,8 +298,6 @@ template <typename Iterator>
 constexpr move_iterator<Iterator> make_move_iterator (Iterator i)
     { return move_iterator<Iterator>(i); }
 
-#endif
-
 //}}}-------------------------------------------------------------------
 //{{{ insert_iterator
 
@@ -331,12 +308,12 @@ constexpr move_iterator<Iterator> make_move_iterator (Iterator i)
 template <typename Container>
 class insert_iterator {
 public:
-    typedef typename Container::value_type	value_type;
-    typedef typename Container::difference_type	difference_type;
-    typedef typename Container::pointer		pointer;
-    typedef typename Container::reference	reference;
-    typedef typename Container::iterator	iterator;
-    typedef output_iterator_tag			iterator_category;
+    using value_type		= typename Container::value_type;
+    using difference_type	= typename Container::difference_type;
+    using pointer		= typename Container::pointer;
+    using reference		= typename Container::reference;
+    using iterator		= typename Container::iterator;
+    using iterator_category	= output_iterator_tag;
 public:
     constexpr explicit		insert_iterator (Container& ctr, iterator ip) : _rctr (ctr), _ip (ip) {}
     inline insert_iterator&	operator= (typename Container::const_reference v)
@@ -364,11 +341,11 @@ constexpr insert_iterator<Container> inserter (Container& ctr, typename Containe
 template <class Container>
 class back_insert_iterator {
 public:
-    typedef typename Container::value_type	value_type;
-    typedef typename Container::difference_type	difference_type;
-    typedef typename Container::pointer		pointer;
-    typedef typename Container::reference	reference;
-    typedef output_iterator_tag			iterator_category;
+    using value_type		= typename Container::value_type;
+    using difference_type	= typename Container::difference_type;
+    using pointer		= typename Container::pointer;
+    using reference		= typename Container::reference;
+    using iterator_category	= output_iterator_tag;
 public:
     constexpr explicit			back_insert_iterator (Container& ctr) : _rctr (ctr) {}
     inline back_insert_iterator&	operator= (typename Container::const_reference v)
@@ -395,11 +372,11 @@ constexpr back_insert_iterator<Container> back_inserter (Container& ctr)
 template <class Container>
 class front_insert_iterator {
 public:
-    typedef typename Container::value_type	value_type;
-    typedef typename Container::difference_type	difference_type;
-    typedef typename Container::pointer		pointer;
-    typedef typename Container::reference	reference;
-    typedef output_iterator_tag			iterator_category;
+    using value_type		= typename Container::value_type;
+    using difference_type	= typename Container::difference_type;
+    using pointer		= typename Container::pointer;
+    using reference		= typename Container::reference;
+    using iterator_category	= output_iterator_tag;
 public:
     constexpr explicit			front_insert_iterator (Container& ctr) : _rctr (ctr) {}
     inline front_insert_iterator&	operator= (typename Container::const_reference v)
@@ -430,11 +407,11 @@ constexpr front_insert_iterator<Container> front_inserter (Container& ctr)
 template <typename RandomAccessIterator, typename IndexIterator>
 class index_iterate {
 public:
-    typedef RandomAccessIterator	value_type;
-    typedef ptrdiff_t			difference_type;
-    typedef RandomAccessIterator*	pointer;
-    typedef RandomAccessIterator	reference;
-    typedef random_access_iterator_tag	iterator_category;
+    using value_type		= RandomAccessIterator;
+    using difference_type	= ptrdiff_t;
+    using pointer		= RandomAccessIterator*;
+    using reference		= RandomAccessIterator;
+    using iterator_category	= random_access_iterator_tag;
 public:
     constexpr			index_iterate (void) : _base(), _i() {}
     constexpr			index_iterate (RandomAccessIterator ibase, IndexIterator iindex) : _base (ibase), _i (iindex) {}

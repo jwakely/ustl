@@ -24,11 +24,7 @@ static void TestList (void)
     cout << "reverse: " << v << endl;
     v.sort();
     cout << "sort: " << v << endl;
-#if HAVE_CPP11
     lt.emplace_front (0);
-#else
-    lt.push_front (0);
-#endif
     lt.insert (lt.end(), VectorRange (c_TestNumbers));
     v.merge (lt);
     cout << "merge: " << v << endl;

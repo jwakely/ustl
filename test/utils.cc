@@ -80,25 +80,17 @@ static void TestUtility (void)
     packed32 = 0xCDCDCDCD;
     pack_type (uint16_t(0x4243), packed32);
     cout << "pack_type(uint16_t, uint32_t) = " << packed32 << endl;
-    #if HAVE_INT64_T
-	uint64_t packed64 = UINT64_C(0x123456789ABCDEF0);
-	pack_type (uint8_t(0x42), packed64);
-	cout << "pack_type(uint8_t, uint64_t) = " << packed64 << endl;
-	packed64 = UINT64_C(0x123456789ABCDEF0);
-	pack_type (uint32_t(0x42434445), packed64);
-	cout << "pack_type(uint32_t, uint64_t) = " << packed64 << endl;
-    #else
-	cout << "No 64bit types available on this platform" << endl;
-    #endif
+    uint64_t packed64 = UINT64_C(0x123456789ABCDEF0);
+    pack_type (uint8_t(0x42), packed64);
+    cout << "pack_type(uint8_t, uint64_t) = " << packed64 << endl;
+    packed64 = UINT64_C(0x123456789ABCDEF0);
+    pack_type (uint32_t(0x42434445), packed64);
+    cout << "pack_type(uint32_t, uint64_t) = " << packed64 << endl;
     cout << endl;
     TestBswap (uint16_t (0x1234));
     cout << setiosflags (ios::uppercase);
     TestBswap (uint32_t (0x12345678));
-    #if HAVE_INT64_T
-	TestBswap (uint64_t (UINT64_C(0x123456789ABCDEF0)));
-    #else
-	cout << "No 64bit types available on this platform" << endl;
-    #endif
+    TestBswap (uint64_t (UINT64_C(0x123456789ABCDEF0)));
     cout << ios::dec << ios::showpos << endl;
     cout << "absv(12) = " << absv(12) << endl;
     cout << "absv(-12) = " << absv(-12) << endl;

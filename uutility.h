@@ -12,10 +12,8 @@
 
 namespace ustl {
 
-#if HAVE_CPP11
-    using nullptr_t	= decltype(nullptr);
-    using max_align_t	= uintptr_t;
-#endif
+using nullptr_t	= decltype(nullptr);
+using max_align_t = uintptr_t;
 
 /// Returns the number of bits in the given type
 #define BitsInType(t)	(sizeof(t) * CHAR_BIT)
@@ -149,13 +147,11 @@ inline constexpr int16_t bswap (int16_t v)	{ return __builtin_bswap16 (v); }
 inline constexpr int32_t bswap (int32_t v)	{ return __builtin_bswap32 (v); }
 inline constexpr int64_t bswap (int64_t v)	{ return __builtin_bswap64 (v); }
 
-#if HAVE_CPP11
 enum class endian {
     little	= __ORDER_LITTLE_ENDIAN__,
     big		= __ORDER_BIG_ENDIAN__,
     native	= __BYTE_ORDER__
 };
-#endif
 
 #if BYTE_ORDER == BIG_ENDIAN
 template <typename T> inline constexpr T le_to_native (const T& v) { return bswap (v); }
@@ -250,11 +246,7 @@ inline uoff_t FirstBit (uint32_t v, uoff_t nbv)
 #if __x86__
     if (!__builtin_constant_p(v)) asm ("bsr\t%1, %k0":"+r,r"(n):"r,m"(v)); else
 #endif
-#if __GNUC__
     if (v) n = 31 - __builtin_clz(v);
-#else
-    if (v) for (uint32_t m = uint32_t(1)<<(n=31); !(v & m); m >>= 1) --n;
-#endif
     return n;
 }
 /// Returns the index of the first set bit in \p v or \p nbv if none.
@@ -264,9 +256,9 @@ inline uoff_t FirstBit (uint64_t v, uoff_t nbv)
 #if __x86_64__
     if (!__builtin_constant_p(v)) asm ("bsr\t%1, %0":"+r,r"(n):"r,m"(v)); else
 #endif
-#if __GNUC__ && SIZE_OF_LONG >= 8
+#if SIZE_OF_LONG >= 8
     if (v) n = 63 - __builtin_clzl(v);
-#elif __GNUC__ && HAVE_LONG_LONG && SIZE_OF_LONG_LONG >= 8
+#elif SIZE_OF_LONG_LONG >= 8
     if (v) n = 63 - __builtin_clzll(v);
 #else
     if (v) for (uint64_t m = uint64_t(1)<<(n=63); !(v & m); m >>= 1) --n;

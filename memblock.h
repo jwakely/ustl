@@ -26,6 +26,8 @@ public:
     explicit			memblock (const cmemlink& b);
     explicit			memblock (const memlink& b);
 				memblock (const memblock& b);
+    constexpr			memblock (memblock&& b)		: memlink(), _capacity(0) { swap (b); }
+    constexpr memblock&		operator= (memblock&& b)	{ swap (b); return *this; }
     virtual			~memblock (void) noexcept;
     virtual void		unlink (void) noexcept override;
     inline void			assign (const cmemlink& l)	{ assign (l.cdata(), l.readable_size()); }
@@ -49,10 +51,6 @@ public:
     void			copy_link (void);
     void			read (istream& is);
     void			read_file (const char* filename);
-#if HAVE_CPP11
-    constexpr			memblock (memblock&& b)		: memlink(), _capacity(0) { swap (b); }
-    constexpr memblock&		operator= (memblock&& b)	{ swap (b); return *this; }
-#endif
 protected:
     virtual size_type		minimumFreeCapacity (void) const noexcept __attribute__((const)) { return 0; }
 private:

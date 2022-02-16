@@ -16,7 +16,7 @@
 
 #pragma once
 #include "ulimits.h"
-#if HAVE_MATH_H
+#if __has_include(<math.h>)
     #include <math.h>
 #endif
 
@@ -92,14 +92,14 @@ STD_BINARY_FUNCTOR (fpmin,  T, (min (a, b)))
 STD_BINARY_FUNCTOR (fpmax,  T, (max (a, b)))
 STD_BINARY_FUNCTOR (fpavg,  T, ((a + b + 1) / 2))
 STD_CONVERSION_FUNCTOR (fcast, (D(a)))
-#if HAVE_MATH_H
+#if __has_include(<math.h>)
 STD_UNARY_FUNCTOR (fpreciprocal,T, (1 / a))
 STD_UNARY_FUNCTOR (fpsqrt,	T, (reset_mmx(), T (sqrt (a))))
 STD_UNARY_FUNCTOR (fprecipsqrt,	T, (reset_mmx(), 1 / T(sqrt (a))))
 STD_UNARY_FUNCTOR (fsin,	T, (reset_mmx(), T (sin (a))))
 STD_UNARY_FUNCTOR (fcos,	T, (reset_mmx(), T (cos (a))))
 STD_UNARY_FUNCTOR (ftan,	T, (reset_mmx(), T (tan (a))))
-#if HAVE_RINTF
+#if __linux__
 STD_CONVERSION_FUNCTOR (fround, (reset_mmx(), D(rintf(a))))
 #else
 STD_CONVERSION_FUNCTOR (fround, (reset_mmx(), D(rint(a))))
@@ -113,21 +113,21 @@ template <> inline double fpavg<double>::operator()(const double& a, const doubl
 template <typename Ctr>				\
 inline void name (Ctr& op1)			\
 {						\
-    typedef typename Ctr::value_type value_t;	\
+    using value_t = typename Ctr::value_type;	\
     packop (op1, operation<value_t>());		\
 }
 #define SIMD_PACKEDOP2(name, operation)		\
 template <typename Ctr>				\
 inline void name (const Ctr& op1, Ctr& op2)	\
 {						\
-    typedef typename Ctr::value_type value_t;	\
+    using value_t = typename Ctr::value_type;	\
     packop (op1, op2, operation<value_t>());	\
 }
 #define SIMD_PACKEDOP3(name, operation)			\
 template <typename Ctr>					\
 inline void name (const Ctr& op1, const Ctr& op2, Ctr& result)	\
 {							\
-    typedef typename Ctr::value_type value_t;		\
+    using value_t = typename Ctr::value_type;		\
     packop (op1, op2, result, operation<value_t>());	\
 }
 #define SIMD_SINGLEOP1(name, operation)		\
@@ -141,8 +141,8 @@ inline T name (T op)				\
 template <typename Ctr1, typename Ctr2>		\
 inline void name (const Ctr1& op1, Ctr2& op2)	\
 {						\
-    typedef typename Ctr1::value_type value1_t;	\
-    typedef typename Ctr2::value_type value2_t;	\
+    using value1_t = typename Ctr1::value_type;	\
+    using value2_t = typename Ctr2::value_type;	\
     pconvert (op1, op2, operation<value1_t, value2_t>());\
 }
 
@@ -175,7 +175,7 @@ SIMD_PACKEDOP3 (pmin, fpmin)
 SIMD_PACKEDOP3 (pmax, fpmax)
 SIMD_PACKEDOP3 (pavg, fpavg)
 
-#if HAVE_MATH_H
+#if __has_include(<math.h>)
 SIMD_PACKEDOP1 (precip, fpreciprocal)
 SIMD_PACKEDOP1 (psqrt, fpsqrt)
 SIMD_PACKEDOP1 (precipsqrt, fprecipsqrt)
@@ -204,19 +204,13 @@ template <typename T> inline int32_t sround (T op) { fround<T,int32_t> obj; retu
 // Vector types to cast tuple data to
 //----------------------------------------------------------------------
 
-#if HAVE_VECTOR_EXTENSIONS && __GNUC__ >= 4
 #define VECTOR_ATTRIBUTE(mode,vs)	__attribute__((vector_size(vs)))
-#else
-#define VECTOR_ATTRIBUTE(mode,vs)
-#endif
 typedef uint8_t v8qi_t VECTOR_ATTRIBUTE (V8QI,8);
 typedef uint16_t v4hi_t VECTOR_ATTRIBUTE (V4HI,8);
 typedef uint16_t v8hi_t VECTOR_ATTRIBUTE (V8HI,16);
 typedef uint32_t v2si_t VECTOR_ATTRIBUTE (V2SI,8);
 typedef uint32_t v4si_t VECTOR_ATTRIBUTE (V4SI,16);
-#if HAVE_INT64_T
 typedef uint64_t v1di_t VECTOR_ATTRIBUTE (V1DI,8);
-#endif
 typedef float v2sf_t VECTOR_ATTRIBUTE (V2SF,8);
 typedef float v4sf_t VECTOR_ATTRIBUTE (V4SF,16);
 typedef double v2df_t VECTOR_ATTRIBUTE (V2DF,16);

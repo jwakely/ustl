@@ -6,7 +6,7 @@
 #include "bktrace.h"
 #include "sostream.h"
 #include "mistream.h"
-#if HAVE_EXECINFO_H
+#if __has_include(<execinfo.h>)
     #include <execinfo.h>
 #else
     static inline int backtrace (void**, int)			{ return 0; }

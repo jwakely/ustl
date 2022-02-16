@@ -27,34 +27,38 @@ struct pair_compare_first_key : public binary_function<pair<K,V>,K,bool> {
 template <typename K, typename V, typename Comp = less<K> >
 class map : public vector<pair<K,V> > {
 public:
-    typedef K						key_type;
-    typedef V						data_type;
-    typedef const K&					const_key_ref;
-    typedef const V&					const_data_ref;
-    typedef const map<K,V,Comp>&			rcself_t;
-    typedef vector<pair<K,V> >				base_class;
-    typedef typename base_class::value_type		value_type;
-    typedef typename base_class::size_type		size_type;
-    typedef typename base_class::pointer		pointer;
-    typedef typename base_class::const_pointer		const_pointer;
-    typedef typename base_class::reference		reference;
-    typedef typename base_class::const_reference	const_reference;
-    typedef typename base_class::const_iterator		const_iterator;
-    typedef typename base_class::iterator		iterator;
-    typedef typename base_class::reverse_iterator	reverse_iterator;
-    typedef typename base_class::const_reverse_iterator	const_reverse_iterator;
-    typedef pair<const_iterator,const_iterator>		const_range_t;
-    typedef pair<iterator,iterator>			range_t;
-    typedef pair<iterator,bool>				insertrv_t;
-    typedef Comp					key_compare;
-    typedef pair_compare_first<value_type,Comp>		value_compare;
-    typedef pair_compare_first_key<K,V,Comp>		value_key_compare;
+    using key_type		= K;
+    using data_type		= V;
+    using const_key_ref		= const K&;
+    using const_data_ref	= const V&;
+    using rcself_t		= const map<K,V,Comp>&;
+    using base_class		= vector<pair<K,V> >;
+    using value_type		= typename base_class::value_type;
+    using size_type		= typename base_class::size_type;
+    using pointer		= typename base_class::pointer;
+    using const_pointer		= typename base_class::const_pointer;
+    using reference		= typename base_class::reference;
+    using const_reference	= typename base_class::const_reference;
+    using const_iterator	= typename base_class::const_iterator;
+    using iterator		= typename base_class::iterator;
+    using reverse_iterator	= typename base_class::reverse_iterator;
+    using const_reverse_iterator = typename base_class::const_reverse_iterator;
+    using const_range_t		= pair<const_iterator,const_iterator>;
+    using range_t		= pair<iterator,iterator>;
+    using insertrv_t		= pair<iterator,bool>;
+    using key_compare		= Comp;
+    using value_compare		= pair_compare_first<value_type,Comp>;
+    using value_key_compare	= pair_compare_first_key<K,V,Comp>;
+    using initlist_t		= std::initializer_list<value_type>;
 public:
     inline			map (void)			: base_class() {}
     explicit inline		map (size_type n)		: base_class (n) {}
     inline			map (rcself_t v)		: base_class (v) {}
     inline			map (const_iterator i1, const_iterator i2) : base_class() { insert (i1, i2); }
+    inline			map (map&& v)			: base_class (move(v)) {}
+    inline			map (initlist_t v)		: base_class() { insert (v.begin(), v.end()); }
     inline rcself_t		operator= (rcself_t v)		{ base_class::operator= (v); return *this; }
+    inline map&			operator= (map&& v)		{ base_class::operator= (move(v)); return *this; }
     inline const_data_ref	at (const_key_ref k) const	{ assert (find(k) != end()); return find(k)->second; }
     inline data_type&		at (const_key_ref k)		{ assert (find(k) != end()); return find(k)->second; }
     inline const_data_ref	operator[] (const_key_ref i) const	{ return at(i); }
@@ -79,29 +83,23 @@ public:
     const_range_t		equal_range (const_key_ref k) const	{ return ::ustl::equal_range (begin(), end(), k, value_key_compare()); }
     inline range_t		equal_range (const_key_ref k)		{ return ::ustl::equal_range (begin(), end(), k, value_key_compare()); }
     inline size_type		count (const_key_ref v) const		{ const_range_t r = equal_range(v); return distance(r.first,r.second); }
-    insertrv_t			insert (const_reference v);
-    inline iterator		insert (const_iterator, const_reference v)	{ return insert(v).first; }
-    void			insert (const_iterator i1, const_iterator i2)	{ for (; i1 != i2; ++i1) insert (*i1); }
-    inline void			erase (const_key_ref k);
-    inline iterator		erase (iterator ep)		{ return base_class::erase (ep); }
-    inline iterator		erase (iterator ep1, iterator ep2) { return base_class::erase (ep1, ep2); }
-    inline void			clear (void)			{ base_class::clear(); }
-    inline void			swap (map& v)			{ base_class::swap (v); }
-#if HAVE_CPP11
-    using initlist_t = std::initializer_list<value_type>;
-    inline			map (map&& v)			: base_class (move(v)) {}
-    inline			map (initlist_t v)		: base_class() { insert (v.begin(), v.end()); }
-    inline map&			operator= (map&& v)		{ base_class::operator= (move(v)); return *this; }
-    insertrv_t			insert (value_type&& v);
-    inline iterator		insert (const_iterator, value_type&& v)	{ return insert(move(v)).first; }
-    inline void			insert (initlist_t v)		{ insert (v.begin(), v.end()); }
     template <typename... Args>
     inline insertrv_t		emplace (Args&&... args)	{ return insert (value_type(forward<Args>(args)...)); }
     template <typename... Args>
     inline iterator		emplace_hint (const_iterator h, Args&&... args)	{ return insert (h, value_type(forward<Args>(args)...)); }
     template <typename... Args>
     inline insertrv_t		emplace_back (Args&&... args)	{ return insert (value_type(forward<Args>(args)...)); }
-#endif
+    insertrv_t			insert (const_reference v);
+    inline iterator		insert (const_iterator, const_reference v)	{ return insert(v).first; }
+    void			insert (const_iterator i1, const_iterator i2)	{ for (; i1 != i2; ++i1) insert (*i1); }
+    insertrv_t			insert (value_type&& v);
+    inline iterator		insert (const_iterator, value_type&& v)	{ return insert(move(v)).first; }
+    inline void			insert (initlist_t v)		{ insert (v.begin(), v.end()); }
+    inline void			erase (const_key_ref k);
+    inline iterator		erase (iterator ep)		{ return base_class::erase (ep); }
+    inline iterator		erase (iterator ep1, iterator ep2) { return base_class::erase (ep1, ep2); }
+    inline void			clear (void)			{ base_class::clear(); }
+    inline void			swap (map& v)			{ base_class::swap (v); }
 };
 
 /// Returns the pair<K,V> where K = \p k.
@@ -143,7 +141,6 @@ typename map<K,V,Comp>::insertrv_t map<K,V,Comp>::insert (const_reference v)
     return make_pair (ip, bInserted);
 }
 
-#if HAVE_CPP11
 /// Inserts the pair into the container.
 template <typename K, typename V, typename Comp>
 typename map<K,V,Comp>::insertrv_t map<K,V,Comp>::insert (value_type&& v)
@@ -154,7 +151,6 @@ typename map<K,V,Comp>::insertrv_t map<K,V,Comp>::insert (value_type&& v)
 	ip = base_class::insert (ip, move(v));
     return make_pair (ip, bInserted);
 }
-#endif
 
 /// Erases the element with key value \p k.
 template <typename K, typename V, typename Comp>

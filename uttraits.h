@@ -6,7 +6,6 @@
 #pragma once
 #include "utypes.h"
 
-#if HAVE_CPP11
 namespace ustl {
 
 //{{{ Helper templates and specs ---------------------------------------
@@ -99,9 +98,7 @@ template <typename T> using remove_all_extents_t = typename remove_all_extents<T
 template <typename T> struct underlying_type	{ using type = __underlying_type(T); };
 template <typename T> using underlying_type_t = typename underlying_type<T>::type;
 
-#if HAVE_CPP14
 template <typename...> using void_t = void;
-#endif
 
 template <typename T> struct make_signed	{ using type = T; };
 template <> struct make_signed<char>		{ using type = signed char; };
@@ -109,9 +106,7 @@ template <> struct make_signed<unsigned char>	{ using type = signed char; };
 template <> struct make_signed<unsigned short>	{ using type = signed short; };
 template <> struct make_signed<unsigned int>	{ using type = signed int; };
 template <> struct make_signed<unsigned long>	{ using type = signed long; };
-#if HAVE_LONG_LONG
 template <> struct make_signed<unsigned long long> { using type = signed long long; };
-#endif
 template <typename T> using make_signed_t = typename make_signed<T>::type;
 
 template <typename T> struct make_unsigned	{ using type = T; };
@@ -120,9 +115,7 @@ template <> struct make_unsigned<signed char>	{ using type = unsigned char; };
 template <> struct make_unsigned<short>		{ using type = unsigned short; };
 template <> struct make_unsigned<int>		{ using type = unsigned int; };
 template <> struct make_unsigned<long>		{ using type = unsigned long; };
-#if HAVE_LONG_LONG
 template <> struct make_unsigned<long long>	{ using type = unsigned long long; };
-#endif
 template <typename T> using make_unsigned_t = typename make_unsigned<T>::type;
 
 //}}}-------------------------------------------------------------------
@@ -156,10 +149,8 @@ UNARY_TRAIT_TRUE (__is_integral, unsigned char);
 UNARY_TRAIT_TRUE (__is_integral, unsigned short);
 UNARY_TRAIT_TRUE (__is_integral, unsigned int);
 UNARY_TRAIT_TRUE (__is_integral, unsigned long);
-#if HAVE_LONG_LONG
 UNARY_TRAIT_TRUE (__is_integral, long long);
 UNARY_TRAIT_TRUE (__is_integral, unsigned long long);
-#endif
 UNARY_TRAIT_TRUE (__is_integral, wchar_t);
 UNARY_TRAIT_TRUE (__is_integral, bool);
 UNARY_TRAIT_DEFB (is_integral, __is_integral<remove_cv_t<T>>::value);
@@ -282,9 +273,7 @@ UNARY_TRAIT_DEFB (is_empty,		__is_empty(T));
 UNARY_TRAIT_DEFB (is_abstract,		__is_abstract(T));
 UNARY_TRAIT_DEFB (is_literal_type,	__is_literal_type(T));
 UNARY_TRAIT_DEFB (is_polymorphic,	__is_polymorphic(T));
-#if HAVE_CPP14
 UNARY_TRAIT_DEFB (is_final,		__is_final(T));
-#endif
 UNARY_TRAIT_DEFB (is_standard_layout,	__is_standard_layout(T));
 UNARY_TRAIT_DEFB (is_pod,		__is_pod(T) || is_scalar<T>::value || (is_array<T>::value && is_scalar<remove_all_extents_t<T>>::value));
 UNARY_TRAIT_DEFB (has_unique_object_representations,	is_pod<T>::value);
@@ -390,7 +379,6 @@ template <typename T, typename U> struct is_nothrow_assignable : public false_ty
 template <typename T> struct is_nothrow_copy_assignable : public false_type {};
 template <typename T> struct is_nothrow_move_assignable : public false_type {};
 
-#if __GNUC__ >= 5
 UNARY_TRAIT_DEFB (is_trivially_copyable,	__is_trivially_copyable(T));
 template <typename T, typename... Args>
 struct is_trivially_constructible : public integral_constant<bool, __is_trivially_constructible(T, Args...)> {};
@@ -411,12 +399,6 @@ struct is_trivially_assignable : public integral_constant<bool, __is_trivially_a
 UNARY_TRAIT_DEFB (is_trivially_default_constructible,	__is_trivially_constructible(T));
 UNARY_TRAIT_DEFB (is_trivially_copy_assignable,	__is_trivially_assignable(T,const T&));
 UNARY_TRAIT_DEFB (is_trivially_move_assignable,	__is_trivially_assignable(T,T&&));
-#else
-UNARY_TRAIT_DEFB (is_trivially_copyable,		__has_trivial_copy(T));
-UNARY_TRAIT_DEFB (is_trivially_default_constructible,	__has_trivial_constructor(T));
-UNARY_TRAIT_DEFB (is_trivially_copy_assignable,		__has_trivial_assign(T));
-UNARY_TRAIT_DEFB (is_trivially_move_assignable,		false);
-#endif
 
 UNARY_TRAIT_DEFB (is_trivially_destructible,	__has_trivial_destructor(T));
 UNARY_TRAIT_DEFB (has_trivial_copy_constructor,	__has_trivial_copy(T));
@@ -503,4 +485,3 @@ template <size_t Size, size_t Grain> struct aligned_storage
 //}}}
 
 } // namespace ustl
-#endif // HAVE_CPP11

@@ -9,7 +9,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/ioctl.h>
-#if HAVE_SYS_MMAN_H
+#if __has_include(<sys/mman.h>)
     #include <sys/mman.h>
 #endif
 
@@ -236,7 +236,7 @@ void fstream::set_nonblock (bool v) noexcept
     fcntl (FCNTLID (F_SETFL), curf);
 }
 
-#if HAVE_SYS_MMAN_H
+#if __has_include(<sys/mman.h>)
 
 /// Memory-maps the file and returns a link to it.
 memlink fstream::mmap (off_t n, off_t offset)

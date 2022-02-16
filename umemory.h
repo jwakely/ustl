@@ -27,9 +27,9 @@ namespace ustl {
 template <typename T>
 class auto_ptr {
 public:
-    typedef T		value_type;
-    typedef T*		pointer;
-    typedef T&		reference;
+    using value_type	= T;
+    using pointer	= T*;
+    using reference	= T&;
 public:
     /// Takes ownership of \p p.
     inline explicit	auto_ptr (pointer p = nullptr)	: _p (p) {}
@@ -58,7 +58,6 @@ private:
 
 //}}}-------------------------------------------------------------------
 //{{{ unique_ptr
-#if HAVE_CPP11
 
 /// \class unique_ptr memory.h stl.h
 /// \ingroup MemoryManagement
@@ -129,8 +128,6 @@ private:
     pointer			_p;
 };
 
-#if HAVE_CPP14
-
 template <typename T> struct __make_unique { using __single_object = unique_ptr<T>; };
 template <typename T> struct __make_unique<T[]> { using __array = unique_ptr<T[]>; };
 template <typename T, size_t N> struct __make_unique<T[N]> { struct __invalid_type {}; };
@@ -147,13 +144,8 @@ template <typename T, typename... Args>
 inline typename __make_unique<T>::__invalid_type
     make_unique (Args&&...) = delete;
 
-#endif // HAVE_CPP14
-#endif // HAVE_CPP11
-
 //}}}-------------------------------------------------------------------
 //{{{ shared_ptr
-
-#if HAVE_CPP11
 
 /// \class shared_ptr memory.h stl.h
 /// \ingroup MemoryManagement
@@ -204,13 +196,9 @@ private:
     container*			_p;
 };
 
-#if HAVE_CPP14
-
 template <typename T, typename... Args>
 inline auto make_shared (Args&&... args)
     { return shared_ptr<T> (new T (forward<Args>(args)...)); }
-
-#endif // HAVE_CPP14
 
 //}}}-------------------------------------------------------------------
 //{{{ scope_exit
@@ -230,11 +218,9 @@ private:
     bool	_enabled;
 };
 
-#if HAVE_CPP14
 template <typename F>
 auto make_scope_exit (F&& f) noexcept
     { return scope_exit<remove_reference_t<F>>(forward<F>(f)); }
-#endif // HAVE_CPP14
 
 //}}}-------------------------------------------------------------------
 //{{{ unique_resource
@@ -282,8 +268,6 @@ private:
     bool		_enabled;
 };
 
-#if HAVE_CPP14
-
 template <typename R,typename D>
 auto make_unique_resource (R&& r, D&& d) noexcept
     { return unique_resource<R,remove_reference_t<D>>(move(r), forward<remove_reference_t<D>>(d), true); }
@@ -294,9 +278,6 @@ auto make_unique_resource_checked (R r, R invalid, D d) noexcept
     bool shouldrun = !(r == invalid);
     return unique_resource<R,D>(move(r), move(d), shouldrun);
 }
-
-#endif // HAVE_CPP14
-#endif // HAVE_CPP11
 
 //}}}-------------------------------------------------------------------
 //{{{ construct and destroy
@@ -315,14 +296,12 @@ template <typename T>
 inline void construct_at (T* p, const T& value)
     { new (p) T (value); }
 
-#if HAVE_CPP11
 /// Calls the move placement new on \p p.
 /// \ingroup RawStorageAlgorithms
 ///
 template <typename T>
 inline void construct_at (T* p, T&& value)
     { new (p) T (move<T>(value)); }
-#endif
 
 template <typename T>
 inline void construct (T* p)
@@ -334,12 +313,8 @@ inline void construct (T* p)
 template <typename ForwardIterator>
 inline void uninitialized_default_construct (ForwardIterator first, ForwardIterator last)
 {
-    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
-#if HAVE_CPP11
+    using value_type = typename iterator_traits<ForwardIterator>::value_type;
     if (is_pod<value_type>::value)
-#else
-    if (numeric_limits<value_type>::is_integral)
-#endif
 	memset (static_cast<void*>(first), 0, max(distance(first,last),0)*sizeof(value_type));
     else
 	for (--last; intptr_t(first) <= intptr_t(last); ++first)
@@ -356,7 +331,7 @@ inline void construct (ForwardIterator first, ForwardIterator last)
 template <typename ForwardIterator>
 inline void uninitialized_value_construct (ForwardIterator first, ForwardIterator last)
 {
-    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
+    using value_type = typename iterator_traits<ForwardIterator>::value_type;
     for (--last; intptr_t(first) <= intptr_t(last); ++first)
 	construct_at (&*first, value_type());
 }
@@ -397,12 +372,8 @@ struct Sdtorsr<T,true> {
 template <typename ForwardIterator>
 inline void destroy (ForwardIterator first, ForwardIterator last) noexcept
 {
-    typedef typename iterator_traits<ForwardIterator>::value_type value_type;
-#if HAVE_CPP11
+    using value_type = typename iterator_traits<ForwardIterator>::value_type;
     Sdtorsr<ForwardIterator,is_pod<value_type>::value>()(first, last);
-#else
-    Sdtorsr<ForwardIterator,numeric_limits<value_type>::is_integral>()(first, last);
-#endif
 }
 template <typename ForwardIterator>
 inline void destroy_n (ForwardIterator first, size_t n) noexcept
@@ -424,7 +395,7 @@ inline pair<T*, ptrdiff_t> make_temporary_buffer (void* p, size_t n, const T* pt
     return make_pair (cast_to_type(p,ptype), ptrdiff_t(p ? n : 0));
 }
 
-#if HAVE_ALLOCA_H
+#if __has_include(<alloca.h>)
     /// \brief Allocates a temporary buffer, if possible.
     /// \ingroup RawStorageAlgorithms
     #define get_temporary_buffer(size, ptype)	make_temporary_buffer (alloca(size_of_elements(size, ptype)), size, ptype)
@@ -477,8 +448,6 @@ ForwardIterator uninitialized_fill_n (ForwardIterator first, size_t n, const T& 
     return first;
 }
 
-#if HAVE_CPP11
-    
 /// Moves [first, last) into result by calling move constructors in result.
 /// \ingroup RawStorageAlgorithms
 ///
@@ -501,13 +470,10 @@ ForwardIterator uninitialized_move_n (InputIterator first, size_t n, ForwardIter
     return result;
 }
 
-#endif // HAVE_CPP11
-
 } // namespace ustl
 
 //}}}-------------------------------------------------------------------
 //{{{ initializer_list
-#if HAVE_CPP11
 
 namespace std {	// Internal stuff must be in std::
 
@@ -515,12 +481,12 @@ namespace std {	// Internal stuff must be in std::
 template <typename T>
 class initializer_list {
 public:
-    typedef T 			value_type;
-    typedef size_t 		size_type;
-    typedef const T& 		const_reference;
-    typedef const_reference	reference;
-    typedef const T* 		const_iterator;
-    typedef const_iterator	iterator;
+    using value_type		= T;
+    using size_type		= size_t;
+    using const_reference	= const T&;
+    using reference		= const_reference;
+    using const_iterator	= const T*;
+    using iterator		= const_iterator;
 private:
     /// This object is only constructed by the compiler when the {1,2,3}
     /// syntax is used, so the constructor must be private
@@ -542,5 +508,4 @@ inline constexpr const T* end (initializer_list<T> il) noexcept { return il.end(
 
 } // namespace std
 
-#endif	// HAVE_CPP11
 //}}}-------------------------------------------------------------------

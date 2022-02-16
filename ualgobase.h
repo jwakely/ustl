@@ -9,8 +9,6 @@
 
 namespace ustl {
 
-#if HAVE_CPP11
-
 template <typename T>
 inline constexpr typename tm::RemoveReference<T>::Result&& move (T&& v) noexcept
     { return static_cast<typename tm::RemoveReference<T>::Result&&>(v); }
@@ -23,7 +21,6 @@ template <typename T>
 inline constexpr T&& forward (typename tm::RemoveReference<T>::Result&& v) noexcept
     { return static_cast<T&&>(v); }
 
-#if HAVE_CPP14
 template <typename T, typename U = T>
 constexpr auto exchange (T& a, U&& b)
 {
@@ -31,19 +28,6 @@ constexpr auto exchange (T& a, U&& b)
     a = forward<U>(b);
     return t;
 }
-#endif
-
-#else
-
-template <typename T>
-inline constexpr typename tm::RemoveReference<T>::Result& move (T& v) noexcept
-    { return v; }
-
-template <typename T>
-inline constexpr T& forward (typename tm::RemoveReference<T>::Result& v) noexcept
-    { return v; }
-
-#endif
 
 /// Assigns the contents of a to b and the contents of b to a.
 /// This is used as a primitive operation by many other algorithms. 
@@ -169,19 +153,10 @@ extern "C" void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v) noexcep
 extern "C" void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v) noexcept;
 extern "C" void rotate_fast (void* first, void* middle, void* last) noexcept;
 
-#if __GNUC__ >= 4
 /// \brief Computes the number of 1 bits in a number.
 /// \ingroup ConditionAlgorithms
 inline size_t popcount (uint32_t v)	{ return __builtin_popcount (v); }
-#if HAVE_INT64_T
 inline size_t popcount (uint64_t v)	{ return __builtin_popcountll (v); }
-#endif
-#else
-size_t popcount (uint32_t v) noexcept;
-#if HAVE_INT64_T
-size_t popcount (uint64_t v) noexcept;
-#endif	// HAVE_INT64_T
-#endif	// __GNUC__
 
 //----------------------------------------------------------------------
 // Optimized versions for standard types

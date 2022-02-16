@@ -30,12 +30,12 @@ O		:= .o/
 #DEBUG		:= 1
 WARNOPTS	:= -Wall -Wextra -Woverloaded-virtual -Wpointer-arith\
 		-Wshadow -Wredundant-decls -Wcast-qual
-TGTOPTS		:= @TGT_OPTS@ @CUSTOMINCDIR@
-INLINEOPTS	:= @INLINE_OPTS@
+TGTOPTS		:= -std=c++14 @CUSTOMINCDIR@
+INLINEOPTS	:= -fno-threadsafe-statics -fno-enforce-eh-specs
 
 CXXFLAGS	:= ${WARNOPTS} ${TGTOPTS}
 LDFLAGS		:= @CUSTOMLIBDIR@
-LIBS		:= @libsupc++@ @libgcc_eh@ @libSystemStubs@
+LIBS		:= @libsupc++@ @libSystemStubs@
 ifdef DEBUG
     CXXFLAGS	+= -O0 -g
     LDFLAGS	+= -rdynamic

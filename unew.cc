@@ -25,10 +25,8 @@ void* operator new[] (size_t n)	{ return tmalloc(n); }
 
 void  operator delete (void* p) noexcept	{ nfree(p); }
 void  operator delete[] (void* p) noexcept	{ nfree(p); }
-#if HAVE_CPP14
 void  operator delete (void* p, size_t sz) noexcept	{ nfreen(p,sz); }
 void  operator delete[] (void* p, size_t sz) noexcept	{ nfreen(p,sz); }
-#endif // HAVE_CPP14
 
 #else // !__APPLE__
 
@@ -37,9 +35,7 @@ void* operator new[] (size_t n)	WEAKALIAS("tmalloc");
 
 void  operator delete (void* p) noexcept	WEAKALIAS("nfree");
 void  operator delete[] (void* p) noexcept	WEAKALIAS("nfree");
-#if HAVE_CPP14
 void  operator delete (void* p, size_t n) noexcept	WEAKALIAS("nfreen");
 void  operator delete[] (void* p, size_t n) noexcept	WEAKALIAS("nfreen");
-#endif // HAVE_CPP14
 
 #endif // __APPLE__

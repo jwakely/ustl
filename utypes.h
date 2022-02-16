@@ -7,14 +7,14 @@
 #define __STDC_LIMIT_MACROS	// For WCHAR_MIN and WCHAR_MAX in stdint.
 #define __STDC_CONSTANT_MACROS	// For UINT??_C macros to avoid using L and UL suffixes on constants.
 #include "config.h"
-#if HAVE_STDINT_H
+#if __has_include(<stdint.h>)
     #include <stdint.h>
-#elif HAVE_INTTYPES_H
+#elif __has_include(<inttypes.h>)
     #include <inttypes.h>
 #else
     #error "Need standard integer types definitions, usually in stdint.h"
 #endif
-#if HAVE_SYS_TYPES_H
+#if __has_include(<sys/types.h>)
     #include <sys/types.h>
 #endif
 #include <stddef.h>		// For ptrdiff_t, size_t
@@ -27,7 +27,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
-#if HAVE_ALLOCA_H
+#if __has_include(<alloca.h>)
     #include <alloca.h>
 #endif
 #ifndef SIZE_MAX
@@ -44,12 +44,10 @@
 	#define WCHAR_MAX	CHAR_MAX
     #endif
 #endif
-#if HAVE_LONG_LONG
-    #ifndef LLONG_MAX
-	#define ULLONG_MAX	UINT64_C(0xFFFFFFFFFFFFFFFF)
-	#define LLONG_MAX	INT64_C(0x7FFFFFFFFFFFFFFF)
-	#define LLONG_MIN	ULLONG_MAX
-    #endif
+#ifndef LLONG_MAX
+    #define ULLONG_MAX		UINT64_C(0xFFFFFFFFFFFFFFFF)
+    #define LLONG_MAX		INT64_C(0x7FFFFFFFFFFFFFFF)
+    #define LLONG_MIN		ULLONG_MAX
 #endif
 #ifndef BYTE_ORDER
     #define LITTLE_ENDIAN	USTL_LITTLE_ENDIAN
@@ -57,10 +55,10 @@
     #define BYTE_ORDER		USTL_BYTE_ORDER
 #endif
 
-typedef size_t		uoff_t;		///< A type for storing offsets into blocks measured by size_t.
-typedef uint32_t	hashvalue_t;	///< Value type returned by the hash functions.
-typedef size_t		streamsize;	///< Size of stream data
-typedef uoff_t		streamoff;	///< Offset into a stream
+using uoff_t = size_t;		///< A type for storing offsets into blocks measured by size_t.
+using hashvalue_t = uint32_t;	///< Value type returned by the hash functions.
+using streamsize = size_t;	///< Size of stream data
+using streamoff = uoff_t;	///< Offset into a stream
 
 #if !defined(UINTPTR_MAX) || !defined(UINT32_C)
     #error "If you include stdint.h before ustl.h, define __STDC_LIMIT_MACROS and __STDC_CONSTANT_MACROS first"

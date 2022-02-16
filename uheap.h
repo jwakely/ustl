@@ -29,7 +29,7 @@ constexpr bool is_heap (RandomAccessIterator first, RandomAccessIterator last, C
 template <typename RandomAccessIterator, typename Compare>
 constexpr void trickle_down_heap (RandomAccessIterator first, size_t iHole, size_t heapSize, Compare comp)
 {
-    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
+    using value_type = typename iterator_traits<RandomAccessIterator>::value_type;
     const value_type v (first[iHole]);
     for (size_t iChild = 0; (iChild = 2 * iHole + 1) < heapSize;) {
 	if (iChild + 1 < heapSize)
@@ -67,7 +67,7 @@ constexpr void push_heap (RandomAccessIterator first, RandomAccessIterator last,
 {
     if (last <= first)
 	return;
-    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;
+    using value_type = typename iterator_traits<RandomAccessIterator>::value_type;
     const value_type v (*--last);
     while (first < last) {
 	RandomAccessIterator iParent = first + (distance(first, last) - 1) / 2;
@@ -106,7 +106,7 @@ constexpr void sort_heap (RandomAccessIterator first, RandomAccessIterator last,
 template <typename RandomAccessIterator>\
 inline constexpr rtype name (RandomAccessIterator first, RandomAccessIterator last)		\
 {											\
-    typedef typename iterator_traits<RandomAccessIterator>::value_type value_type;	\
+    using value_type = typename iterator_traits<RandomAccessIterator>::value_type;	\
     return name (first, last, less<value_type>());					\
 }
 HEAP_FN_WITH_LESS (bool, is_heap)
@@ -127,32 +127,30 @@ HEAP_FN_WITH_LESS (void, sort_heap)
 template <typename T, typename Container = vector<T>, typename Comp = less<typename Container::value_type> >
 class priority_queue {
 public:
-    typedef Container				container_type;
-    typedef typename container_type::size_type	size_type;
-    typedef typename container_type::value_type	value_type;
-    typedef typename container_type::reference	reference;
-    typedef typename container_type::const_reference	const_reference;
-    typedef typename container_type::const_iterator	const_iterator;
+    using container_type	= Container;
+    using size_type		= typename container_type::size_type;
+    using value_type		= typename container_type::value_type;
+    using reference		= typename container_type::reference;
+    using const_reference	= typename container_type::const_reference;
+    using const_iterator	= typename container_type::const_iterator;
 public:
     constexpr explicit		priority_queue (const Comp& c = Comp()) : _v(), _c(c) {}
     constexpr			priority_queue (const Comp& c, const container_type& v) : _v(v), _c(c) {}
     constexpr			priority_queue (const_iterator f, const_iterator l, const Comp& c = Comp())
 				    : _v(f, l), _c(c) { make_heap (_v.begin(), _v.end(), _c); }
-    constexpr size_type		size (void) const	{ return _v.size(); }
-    constexpr bool			empty (void) const	{ return _v.empty(); }
-    constexpr const_reference	top (void) const	{ return _v.front(); }
-    inline void			push (const_reference v){ _v.push_back (v); push_heap (_v.begin(), _v.end(), _c); }
-    inline void			pop (void)		{ pop_heap (_v.begin(), _v.end()); _v.pop_back(); }
-    constexpr void		swap (priority_queue& v){ _v.swap (v._v); swap (_c, v._c); }
-#if HAVE_CPP11
     constexpr explicit		priority_queue (priority_queue&& v)	: _v(move(v._v)),_c(v._c) {}
     constexpr			priority_queue (const Comp& c, container_type&& v)	: _v(move(v)),_c(c) {}
 				priority_queue (const_iterator f, const_iterator l, const Comp& c, container_type&& v)
 				    : _v(move(v)), _c(c) { _v.insert (_v.end(), f, l); make_heap (_v.begin(), _v.end(), _c); }
     constexpr priority_queue&	operator= (priority_queue&& v)	{ swap (v); return *this; }
+    constexpr size_type		size (void) const	{ return _v.size(); }
+    constexpr bool			empty (void) const	{ return _v.empty(); }
+    constexpr const_reference	top (void) const	{ return _v.front(); }
+    inline void			push (const_reference v){ _v.push_back (v); push_heap (_v.begin(), _v.end(), _c); }
     template <typename... Args>
-    inline void			emplace (Args&&... args)	{ _v.emplace_back (forward<Args>(args)...); push_heap (_v.begin(), _v.end(), _c); }
-#endif
+    inline void			emplace (Args&&... args){ _v.emplace_back (forward<Args>(args)...); push_heap (_v.begin(), _v.end(), _c); }
+    inline void			pop (void)		{ pop_heap (_v.begin(), _v.end()); _v.pop_back(); }
+    constexpr void		swap (priority_queue& v){ _v.swap (v._v); swap (_c, v._c); }
 private:
     container_type		_v;	///< Element container.
     Comp			_c;	///< Comparison functor by value.

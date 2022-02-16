@@ -21,7 +21,7 @@ namespace ustl {
 
 //----------------------------------------------------------------------
 
-typedef uint8_t utf8subchar_t;	///< Type for the encoding subcharacters.
+using utf8subchar_t = uint8_t;	///< Type for the encoding subcharacters.
 
 //----------------------------------------------------------------------
 
@@ -97,11 +97,11 @@ inline size_t Utf8SequenceBytes (wchar_t c)	// a wchar_t to keep c in a full reg
 template <typename Iterator, typename WChar = wchar_t>
 class utf8in_iterator {
 public:
-    typedef typename iterator_traits<Iterator>::value_type	value_type;
-    typedef typename iterator_traits<Iterator>::difference_type	difference_type;
-    typedef typename iterator_traits<Iterator>::pointer		pointer;
-    typedef typename iterator_traits<Iterator>::reference	reference;
-    typedef input_iterator_tag					iterator_category;
+    using value_type		= typename iterator_traits<Iterator>::value_type;
+    using difference_type	= typename iterator_traits<Iterator>::difference_type;
+    using pointer		= typename iterator_traits<Iterator>::pointer;
+    using reference		= typename iterator_traits<Iterator>::reference;
+    using iterator_category	= input_iterator_tag;
 public:
     explicit			utf8in_iterator (const Iterator& is)		: _i (is), _v (0) { Read(); }
 				utf8in_iterator (const utf8in_iterator& i)	: _i (i._i), _v (i._v) {}
@@ -155,11 +155,11 @@ utf8in_iterator<Iterator,WChar>::operator- (const utf8in_iterator<Iterator,WChar
 template <typename Iterator, typename WChar = wchar_t>
 class utf8out_iterator {
 public:
-    typedef typename iterator_traits<Iterator>::value_type	value_type;
-    typedef typename iterator_traits<Iterator>::difference_type	difference_type;
-    typedef typename iterator_traits<Iterator>::pointer		pointer;
-    typedef typename iterator_traits<Iterator>::reference	reference;
-    typedef output_iterator_tag					iterator_category;
+    using value_type		= typename iterator_traits<Iterator>::value_type;
+    using difference_type	= typename iterator_traits<Iterator>::difference_type;
+    using pointer		= typename iterator_traits<Iterator>::pointer;
+    using reference		= typename iterator_traits<Iterator>::reference;
+    using iterator_category	= output_iterator_tag;
 public:
     explicit			utf8out_iterator (const Iterator& os) : _i (os) {}
 				utf8out_iterator (const utf8out_iterator& i) : _i (i._i) {} 

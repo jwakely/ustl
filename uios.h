@@ -69,10 +69,10 @@ public:
 
     enum { default_stream_buffer_size = 4095 };
 
-    typedef uint32_t		openmode;	///< Holds openmode_bits.
-    typedef uint32_t		fmtflags;	///< Holds fmtflags_bits for a string stream.
-    typedef uint32_t		iostate;	///< Holds iostate_bits for a file stream.
-    typedef file_exception	failure;	///< Thrown by fstream on errors.
+    using openmode	= uint32_t;	///< Holds openmode_bits.
+    using fmtflags	= uint32_t;	///< Holds fmtflags_bits for a string stream.
+    using iostate	= uint32_t;	///< Holds iostate_bits for a file stream.
+    using failure	= file_exception;	///< Thrown by fstream on errors.
 
     static const char c_DefaultDelimiters [16];	///< Default word delimiters for stringstreams.
 public:

@@ -41,10 +41,8 @@ public:
 #if HAVE_THREE_CHAR_TYPES
     void			iread (signed char& v)		{ char c; iread(c); v = c; }
 #endif
-#if HAVE_LONG_LONG
     void			iread (long long& v);
     inline void			iread (unsigned long long& v)	{ long long c; iread(c); v = c; }
-#endif
     void			iread (double& v);
     inline void			iread (float& v)		{ double c; iread(c); v = c; }
     inline void			iread (long double& v)		{ double c; iread(c); v = c; }
@@ -94,12 +92,7 @@ void istringstream::iread (fmtflags_bits f)
 /// Sets delimiters to the contents of \p delimiters.
 void istringstream::set_delimiters (const char* delimiters)
 {
-#if __x86__ && __SSE__ && HAVE_VECTOR_EXTENSIONS
-    typedef uint32_t v16ud_t __attribute__((vector_size(16)));
-    asm("xorps\t%%xmm0, %%xmm0\n\tmovups\t%%xmm0, %0":"=m"(*noalias_cast<v16ud_t*>(_delimiters))::"xmm0");
-#else
     memset (_delimiters, 0, sizeof(_delimiters));
-#endif
     memcpy (_delimiters, delimiters, min (strlen(delimiters),sizeof(_delimiters)-1));
 }
 
@@ -117,8 +110,7 @@ template <typename T> struct integral_text_object_reader {
 };
 template <typename T>
 inline istringstream& operator>> (istringstream& is, T& v) {
-    typedef typename tm::Select <numeric_limits<T>::is_integral,
-	integral_text_object_reader<T>, object_text_reader<T> >::Result object_reader_t;
+    using object_reader_t = typename tm::Select <numeric_limits<T>::is_integral, integral_text_object_reader<T>, object_text_reader<T> >::Result;
     object_reader_t()(is, v);
     return is;
 }

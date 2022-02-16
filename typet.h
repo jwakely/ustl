@@ -18,13 +18,13 @@ class NullType { };
 template <int v> struct Int2Type { enum { value = v }; };
 
 /// Converts an type to a unique empty type.
-template <typename T> struct Type2Type { typedef T OriginalType; };
+template <typename T> struct Type2Type { using OriginalType = T; };
 
 /// Selects type Result = flag ? T : U
 template <bool flag, typename T, typename U>
-struct Select { typedef T Result; };
+struct Select { using Result = T; };
 template <typename T, typename U>
-struct Select<false, T, U> { typedef U Result; };
+struct Select<false, T, U> { using Result = U; };
 
 /// IsSameType<T,U>::value is true when T=U
 template <typename T, typename U>
@@ -38,8 +38,8 @@ struct IsSameType<T,T> { enum { value = true }; };
 template <typename T, typename U>
 struct Conversion {
 private:
-    typedef char UT;
-    typedef short TT;
+    using UT = char;
+    using TT = short;
     static UT Test (U);
     static TT Test (...);
     static T MakeT (void);
@@ -84,13 +84,6 @@ struct SuperSubclassStrict {
     enum { value = SuperSubclass<T,U>::value &&
 		    !::ustl::tm::Conversion<const volatile T*, const volatile U*>::sameType };
 };
-
-#if !HAVE_CPP11
-// static assert support
-template <bool> struct CompileTimeError;
-template <> struct CompileTimeError<true> {};
-#define static_assert(cond,msg)	{ ::ustl::tm::CompileTimeError<!!(cond)> ERROR_##msg; (void) ERROR_##msg; }
-#endif
 
 } // namespace tm
 } // namespace ustl

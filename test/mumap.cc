@@ -6,8 +6,8 @@
 #include "stdtest.h"
 #include "../umultimap.h"
 
-typedef multimap<int,string> empmap_t;
-typedef empmap_t::const_iterator citer_t;
+using empmap_t = multimap<int,string>;
+using citer_t = empmap_t::const_iterator;
 
 static void PrintEntries (citer_t first, citer_t last)
 {
@@ -25,13 +25,8 @@ static void TestMultiMap (void)
     employees.insert (make_pair (27000, string("Jim"))); 
     employees.insert (make_pair (99000, string("BigBoss"))); 
     employees.insert (make_pair (47000, string("Gail"))); 
-#if HAVE_CPP11
     employees.emplace (make_pair (15000, string("Dumb")));
     employees.insert ({47000, "Barbara"});
-#else
-    employees.insert (make_pair (15000, string("Dumb"))); 
-    employees.insert (make_pair (47000, string("Barbara"))); 
-#endif
     employees.insert (make_pair (47000, string("Mary"))); 
 
     cout << "As-inserted listing:\n";

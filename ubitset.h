@@ -11,7 +11,7 @@ namespace ustl {
 
 class istringstream;
 
-typedef uint32_t	bitset_value_type;
+using bitset_value_type = uint32_t;
 
 void convert_to_bitstring (const bitset_value_type* v, size_t n, string& buf) noexcept;
 void convert_from_bitstring (const string& buf, bitset_value_type* v, size_t n) noexcept;
@@ -31,14 +31,14 @@ void convert_from_bitstring (const string& buf, bitset_value_type* v, size_t n) 
 template <size_t Size>
 class bitset {
 public:
-    typedef bitset_value_type	value_type;
-    typedef value_type*		pointer;
-    typedef const value_type*	const_pointer;
-    typedef pointer		iterator;
-    typedef const_pointer	const_iterator;
-    typedef size_t		difference_type;
-    typedef size_t		size_type;
-    typedef const bitset<Size>&	rcself_t;
+    using value_type		= bitset_value_type;
+    using pointer		= value_type*;
+    using const_pointer		= const value_type*;
+    using iterator		= pointer;
+    using const_iterator	= const_pointer;
+    using difference_type	= size_t;
+    using size_type		= size_t;
+    using rcself_t		= const bitset<Size>&;
 private:
     static const size_t s_WordBits	= BitsInType (value_type);
     static const size_t	s_nWords	= Size / s_WordBits + ((Size % s_WordBits) != 0);
@@ -48,11 +48,7 @@ private:
     constexpr value_type	BitRef (uoff_t n) const	{ assert (n < Size); return _bits [n / s_WordBits]; }
     constexpr value_type	Mask (uoff_t n) const	{ assert (n < Size); return 1 << (n % s_WordBits); }
 public:
-#if HAVE_CPP11
     constexpr		bitset (value_type v = 0)	:_bits{v}{}
-#else
-    inline		bitset (value_type v = 0)	{ for (size_t i = 0; i < VectorSize(_bits); ++i) _bits[i] = 0; _bits[0] = v; }
-#endif
     inline		bitset (const string& buf)	{ convert_from_bitstring (buf, _bits, s_nWords); }
     constexpr void	flip (uoff_t n)			{ BitRef(n) ^= Mask(n); }
     constexpr void	reset (void)			{ fill_n (_bits, s_nWords, 0); }

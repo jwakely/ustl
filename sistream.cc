@@ -73,16 +73,14 @@ char istringstream::skip_delimiters (void)
 //{{{ str_to_num
 namespace {
 
-typedef istringstream::iterator issiter_t;
+using issiter_t = istringstream::iterator;
 template <typename T>
 inline void str_to_num (issiter_t i, issiter_t* iend, unsigned base, T& v)
     { v = strtol (i, const_cast<char**>(iend), base); }
 template <> inline void str_to_num (issiter_t i, issiter_t* iend, unsigned, double& v)
     { v = strtod (i, const_cast<char**>(iend)); }
-#if HAVE_LONG_LONG && SIZE_OF_LONG_LONG > SIZE_OF_LONG
 template <> inline void str_to_num (issiter_t i, issiter_t* iend, unsigned base, long long& v)
     { v = strtoll (i, const_cast<char**>(iend), base); }
-#endif
 
 } //}}} namespace
 
@@ -103,9 +101,7 @@ inline void istringstream::read_number (T& v)
 void istringstream::iread (int& v)		{ read_number (v); }
 void istringstream::iread (double& v)		{ read_number (v); } 
 void istringstream::iread (long& v)		{ read_number (v); }
-#if HAVE_LONG_LONG
 void istringstream::iread (long long& v)	{ read_number (v); }
-#endif
 
 void istringstream::iread (wchar_t& v)
 {

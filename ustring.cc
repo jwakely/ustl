@@ -320,16 +320,10 @@ string::pos_type string::find_last_not_of (const string& s, pos_type pos) const 
 /// Equivalent to a vsprintf on the string.
 int string::vformat (const char* fmt, va_list args)
 {
-#if HAVE_VA_COPY
     va_list args2;
-#else
-    #define args2 args
-    #undef __va_copy
-    #define __va_copy(x,y)
-#endif
     int rv = size(), wcap;
     do {
-	__va_copy (args2, args);
+	va_copy (args2, args);
 	rv = vsnprintf (data(), wcap = memblock::capacity(), fmt, args2);
 	resize (rv);
     } while (rv >= wcap);

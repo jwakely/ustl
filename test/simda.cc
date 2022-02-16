@@ -75,7 +75,7 @@ static void TestConversion (const char* ctrType)
     cout << "================================================" << endl;
     SrcCtr src;
     DstCtr dst;
-    typedef typename SrcCtr::value_type srcval_t;
+    using srcval_t = typename SrcCtr::value_type;
     iota (src.begin(), src.end(), srcval_t(-1.4));
     pconvert (src, dst, Operation());
     cout << src << " -> " << dst << endl;
@@ -95,17 +95,13 @@ static void TestSimdAlgorithms (void)
     TestCtr<tuple<4,int16_t> >("int16_t[4]");
     TestCtr<tuple<2,uint32_t> >("uint32_t[2]");
     TestCtr<tuple<2,int32_t> >("int32_t[2]");
-    #if HAVE_INT64_T
-	TestCtr<tuple<1,uint64_t> >("uint64_t[1]");
-	TestCtr<tuple<1,int64_t> >("int64_t[1]");
-    #else
-	cout << "No 64bit types available on this platform" << endl;
-    #endif
+    TestCtr<tuple<1,uint64_t> >("uint64_t[1]");
+    TestCtr<tuple<1,int64_t> >("int64_t[1]");
     TestCtr<tuple<2,float> >("float[2]");
     TestCtr<tuple<4,float> >("float[4]");
     TestCtr<tuple<7,uint32_t> >("uint32_t[7]");
 
-    #if HAVE_MATH_H
+    #if __has_include(<math.h>)
 	#define CVT_TEST(size,src,dest,op) \
 	TestConversion<tuple<size,src>, tuple<size,dest>, op<src,dest> > (#op " " #src " -> " #dest)
 	CVT_TEST(4,int32_t,float,fround);

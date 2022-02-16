@@ -22,8 +22,8 @@ template <typename T> struct integral_object_stream_size {
 /// Returns the size of the given object. Overloads for standard types are available.
 template <typename T>
 inline constexpr streamsize stream_size_of (const T& v) {
-    typedef typename tm::Select <numeric_limits<T>::is_integral,
-	integral_object_stream_size<T>, object_stream_size<T> >::Result stream_sizer_t;
+    using stream_sizer_t = typename tm::Select <numeric_limits<T>::is_integral,
+	integral_object_stream_size<T>, object_stream_size<T> >::Result;
     return stream_sizer_t()(v);
 }
 

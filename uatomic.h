@@ -5,7 +5,6 @@
 
 #pragma once
 #include "utypes.h"
-#if HAVE_CPP11
 
 //{{{ memory_order -----------------------------------------------------
 
@@ -111,5 +110,4 @@ static inline void atomic_signal_fence (memory_order order) noexcept
 
 } // namespace
 } // namespace ustl
-#endif // HAVE_CPP11
 //}}}-------------------------------------------------------------------

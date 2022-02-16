@@ -125,12 +125,12 @@ inline constexpr bool stream_at_eof (const istream&)	{ return false; }
 template <typename T, typename Stream = istream>
 class istream_iterator {
 public:
-    typedef T			value_type;
-    typedef ptrdiff_t		difference_type;
-    typedef const value_type*	pointer;
-    typedef const value_type&	reference;
-    typedef typename Stream::size_type	size_type;
-    typedef input_iterator_tag	iterator_category;
+    using value_type		= T;
+    using difference_type	= ptrdiff_t;
+    using pointer		= const value_type*;
+    using reference		= const value_type&;
+    using size_type		= typename Stream::size_type;
+    using iterator_category	= input_iterator_tag;
 public:
     constexpr			istream_iterator (void)		: _pis (nullptr), _v() {}
     constexpr explicit		istream_iterator (Stream& is)	: _pis (&is), _v() { Read(); }
@@ -255,8 +255,7 @@ template <typename T> struct integral_object_reader {
 };
 template <typename T>
 inline istream& operator>> (istream& is, T& v) {
-    typedef typename tm::Select <numeric_limits<T>::is_integral,
-	integral_object_reader<T>, object_reader<T> >::Result object_reader_t;
+    using object_reader_t = typename tm::Select <numeric_limits<T>::is_integral, integral_object_reader<T>, object_reader<T>>::Result;
     object_reader_t()(is, v);
     return is;
 }
@@ -265,8 +264,8 @@ inline istream& operator>> (istream& is, const T& v) { v.read (is); return is; }
 
 //----------------------------------------------------------------------
 
-typedef istream_iterator<utf8subchar_t> istream_iterator_for_utf8;
-typedef utf8in_iterator<istream_iterator_for_utf8> utf8istream_iterator;
+using istream_iterator_for_utf8 = istream_iterator<utf8subchar_t> ;
+using utf8istream_iterator = utf8in_iterator<istream_iterator_for_utf8> ;
 
 /// Returns a UTF-8 adaptor reading from \p is.
 inline utf8istream_iterator utf8in (istream& is)

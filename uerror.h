@@ -4,7 +4,6 @@
 // This file is free software, distributed under the MIT License.
 
 #pragma once
-#if HAVE_CPP14
 #include "uttraits.h"
 
 //----------------------------------------------------------------------
@@ -201,4 +200,3 @@ constexpr bool error_code::operator== (const error_condition& v) const noexcept
 
 //}}}-------------------------------------------------------------------
 } // namespace ustl
-#endif // HAVE_CPP14

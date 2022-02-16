@@ -4,7 +4,6 @@
 // This file is free software, distributed under the MIT License.
 
 #include "stdtest.h"
-#if HAVE_CPP11
 
 static void Print (const char* tname, bool tvalue)
 {
@@ -65,13 +64,8 @@ static void TestTypeTraits (void)
     PRT (is_integral<unsigned int>);
     PRT (is_integral<long>);
     PRT (is_integral<unsigned long>);
-#if HAVE_LONG_LONG
     PRT (is_integral<long long>);
     PRT (is_integral<unsigned long long>);
-#else
-    Print ("is_integral<long long>", true);
-    Print ("is_integral<unsigned long long>", true);
-#endif
     PRT (is_integral<float>);
     PRT (is_integral<void*>);
     PRT (is_integral<TTA>);
@@ -275,16 +269,5 @@ static void TestTypeTraits (void)
     ALIGNED_STORAGE_TEST(17,16);
 #undef ALIGNED_STORAGE_TEST
 }
-
-#else // if !HAVE_CPP11
-
-static void TestTypeTraits (void)
-{
-    memblock outbuf;
-    outbuf.read_file ("test/trait.std");
-    cout << outbuf;
-}
-
-#endif
 
 StdTestMain (TestTypeTraits)

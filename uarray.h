@@ -17,19 +17,18 @@ namespace ustl {
 template <typename T, size_t N>
 class array {
 public:
-    typedef T						value_type;
-    typedef unsigned					size_type;
-    typedef value_type*					pointer;
-    typedef const value_type*				const_pointer;
-    typedef value_type&					reference;
-    typedef const value_type&				const_reference;
-    typedef pointer					iterator;
-    typedef const_pointer				const_iterator;
-    typedef ::ustl::reverse_iterator<iterator>		reverse_iterator;
-    typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
+    using value_type		= T;
+    using size_type		= unsigned;
+    using pointer		= value_type*;
+    using const_pointer		= const value_type*;
+    using reference		= value_type&;
+    using const_reference	= const value_type&;
+    using iterator		= pointer;
+    using const_iterator	= const_pointer;
+    using reverse_iterator	= ::ustl::reverse_iterator<iterator>;
+    using const_reverse_iterator = ::ustl::reverse_iterator<const_iterator>;
+    using initlist_t		= std::initializer_list<value_type>;
 public:
-#if HAVE_CPP11
-    using initlist_t = std::initializer_list<value_type>;
     constexpr auto&		operator+= (initlist_t v)		{ for (size_type i = 0; i < N; ++i) _v[i] += v.begin()[i]; return *this; }
     constexpr auto&		operator-= (initlist_t v)		{ for (size_type i = 0; i < N; ++i) _v[i] -= v.begin()[i]; return *this; }
     constexpr auto&		operator*= (initlist_t v)		{ for (size_type i = 0; i < N; ++i) _v[i] *= v.begin()[i]; return *this; }
@@ -38,20 +37,6 @@ public:
     constexpr auto		operator- (initlist_t v) const		{ array result; for (size_type i = 0; i < N; ++i) result[i] = _v[i] - v.begin()[i]; return result; }
     constexpr auto		operator* (initlist_t v) const		{ array result; for (size_type i = 0; i < N; ++i) result[i] = _v[i] * v.begin()[i]; return result; }
     constexpr auto		operator/ (initlist_t v) const		{ array result; for (size_type i = 0; i < N; ++i) result[i] = _v[i] / v.begin()[i]; return result; }
-#else
-    inline			array (void)				{ fill_n (_v, N, T()); }
-    template <typename T2>
-    inline			array (const array<T2,N>& v)		{ copy_n (v.begin(), N, _v); }
-    inline			array (const array& v)			{ copy_n (v.begin(), N, _v); }
-    inline			array (const_pointer v)			{ copy_n (v, N, _v); }
-    explicit inline		array (const_reference v0)		{ fill_n (_v, N, v0); }
-    inline			array (const_reference v0, const_reference v1)	{ _v[0] = v0; fill_n (_v+1,N-1,v1); }
-    inline			array (const_reference v0, const_reference v1, const_reference v2)	{ _v[0] = v0; _v[1] = v1; fill_n (_v+2,N-2,v2); }
-    inline			array (const_reference v0, const_reference v1, const_reference v2, const_reference v3)	{ _v[0] = v0; _v[1] = v1; _v[2] = v2; fill_n (_v+3,N-3,v3); }
-    template <typename T2>
-    inline array&		operator= (const array<T2,N>& v)	{ copy_n (v.begin(), N, _v); return *this; }
-    inline array&		operator= (const array& v)		{ copy_n (v.begin(), N, _v); return *this; }
-#endif
     constexpr iterator		begin (void)				{ return _v; }
     constexpr iterator		end (void)				{ return begin() + N; }
     constexpr reference		at (size_type i)			{ return _v[i]; }

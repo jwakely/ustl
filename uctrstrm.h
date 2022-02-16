@@ -44,7 +44,7 @@ inline ostream& nr_container_write (ostream& os, const Container& v)
 template <typename Container>
 constexpr size_t nr_container_stream_size (const Container& v)
 {
-    typedef typename Container::const_iterator vciter_t;
+    using vciter_t = typename Container::const_iterator;
     if (!v.size())
 	return 0;
     size_t s = 0, dvs = 0;
@@ -66,8 +66,8 @@ constexpr size_t nr_container_stream_size (const Container& v)
 template <typename Container>
 istream& container_read (istream& is, Container& v)
 {
-    typedef typename Container::value_type value_type;
-    typedef typename Container::written_size_type written_size_type;
+    using value_type = typename Container::value_type;
+    using written_size_type = typename Container::written_size_type;
     written_size_type n = 0;
     is >> n;
     const size_t expectedSize = n * stream_size_of(value_type());
@@ -85,8 +85,8 @@ istream& container_read (istream& is, Container& v)
 template <typename Container>
 ostream& container_write (ostream& os, const Container& v)
 {
-    typedef typename Container::value_type value_type;
-    typedef typename Container::written_size_type written_size_type;
+    using value_type = typename Container::value_type;
+    using written_size_type = typename Container::written_size_type;
     const written_size_type sz (v.size());
     os << sz;
     if (stream_align_of(NullValue<value_type>()) > stream_align_of(sz))
@@ -100,8 +100,8 @@ ostream& container_write (ostream& os, const Container& v)
 template <typename Container>
 constexpr size_t container_stream_size (const Container& v)
 {
-    typedef typename Container::value_type value_type;
-    typedef typename Container::written_size_type written_size_type;
+    using value_type = typename Container::value_type;
+    using written_size_type = typename Container::written_size_type;
     const written_size_type sz (v.size());
     size_t sizeSize = stream_size_of (sz);
     if (stream_align_of(NullValue<value_type>()) > stream_align_of(sz))

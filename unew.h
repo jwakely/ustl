@@ -32,10 +32,8 @@ void* operator new (size_t n);
 void* operator new[] (size_t n);
 void  operator delete (void* p) noexcept;
 void  operator delete[] (void* p) noexcept;
-#if HAVE_CPP14
 void  operator delete (void* p, size_t) noexcept;
 void  operator delete[] (void* p, size_t) noexcept;
-#endif
 
 // Default placement versions of operator new.
 inline void* operator new (size_t, void* p) noexcept	{ return p; }

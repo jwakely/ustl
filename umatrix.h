@@ -16,21 +16,21 @@ namespace ustl {
 template <size_t NX, size_t NY, typename T>
 class matrix : public tuple<NX*NY,T> {
 public:
-    typedef tuple<NX,T>					row_type;
-    typedef tuple<NY,T>					column_type;
-    typedef tuple<NX*NY,T>				tuple_type;
-    typedef typename tuple_type::value_type		value_type;
-    typedef typename tuple_type::size_type		size_type;
-    typedef typename tuple_type::pointer		pointer;
-    typedef typename tuple_type::const_pointer		const_pointer;
-    typedef typename tuple_type::reference		reference;
-    typedef typename tuple_type::const_reference	const_reference;
-    typedef typename tuple_type::iterator		iterator;
-    typedef typename tuple_type::const_iterator		const_iterator;
-    typedef typename tuple_type::range_t		range_t;
-    typedef typename tuple_type::const_range_t		const_range_t;
-    typedef typename tuple_type::reverse_iterator	reverse_iterator;
-    typedef typename tuple_type::const_reverse_iterator	const_reverse_iterator;
+    using row_type		= tuple<NX,T>;
+    using column_type		= tuple<NY,T>;
+    using tuple_type		= tuple<NX*NY,T>;
+    using value_type		= typename tuple_type::value_type;
+    using size_type		= typename tuple_type::size_type;
+    using pointer		= typename tuple_type::pointer;
+    using const_pointer		= typename tuple_type::const_pointer;
+    using reference		= typename tuple_type::reference;
+    using const_reference	= typename tuple_type::const_reference;
+    using iterator		= typename tuple_type::iterator;
+    using const_iterator	= typename tuple_type::const_iterator;
+    using range_t		= typename tuple_type::range_t;
+    using const_range_t		= typename tuple_type::const_range_t;
+    using reverse_iterator	= typename tuple_type::reverse_iterator;
+    using const_reverse_iterator = typename tuple_type::const_reverse_iterator;
 public:
     inline			matrix (void)			: tuple<NX*NY,T>() { }
     template <typename T2>

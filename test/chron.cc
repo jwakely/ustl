@@ -5,7 +5,6 @@
 
 #include "stdtest.h"
 
-#if HAVE_CPP11
 static void TestChrono (void)
 {
     // How to time a block of code with system_clock_ms
@@ -72,16 +71,5 @@ static void TestChrono (void)
     cout << tps << endl;
     cout << chrono::time_point_cast<chrono::milliseconds> (tps) << endl;
 }
-#else
-static void TestChrono (void)
-{
-    static const char* c_StdPaths[] = { "test/chron.std", "../../test/chron.std", "chron.std" };
-    string so;
-    for (unsigned i = 0; i < VectorSize(c_StdPaths); ++i)
-	if (0 == access (c_StdPaths[i], R_OK))
-	    so.read_file (c_StdPaths[i]);
-    cout << so;
-}
-#endif
 
 StdTestMain (TestChrono)

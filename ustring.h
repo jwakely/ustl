@@ -39,21 +39,22 @@ namespace ustl {
 ///
 class string : public memblock {
 public:
-    typedef char		value_type;
-    typedef unsigned char	uvalue_type;
-    typedef value_type*		pointer;
-    typedef const value_type*	const_pointer;
-    typedef wchar_t		wvalue_type;
-    typedef wvalue_type*	wpointer;
-    typedef const wvalue_type*	const_wpointer;
-    typedef pointer		iterator;
-    typedef const_pointer	const_iterator;
-    typedef value_type&		reference;
-    typedef value_type		const_reference;
-    typedef ::ustl::reverse_iterator<iterator>		reverse_iterator;
-    typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
-    typedef utf8in_iterator<const_iterator>		utf8_iterator;
-    typedef size_type		pos_type;
+    using value_type		= char;
+    using uvalue_type		= unsigned char;
+    using pointer		= value_type*;
+    using const_pointer		= const value_type*;
+    using wvalue_type		= wchar_t;
+    using wpointer		= wvalue_type*;
+    using const_wpointer	= const wvalue_type*;
+    using iterator		= pointer;
+    using const_iterator	= const_pointer;
+    using reference		= value_type&;
+    using const_reference	= value_type;
+    using reverse_iterator	= ::ustl::reverse_iterator<iterator>;
+    using const_reverse_iterator = ::ustl::reverse_iterator<const_iterator>;
+    using utf8_iterator		= utf8in_iterator<const_iterator>;
+    using pos_type		= size_type;
+    using initlist_t		= std::initializer_list<value_type>;
     static constexpr const pos_type npos = INT_MAX;	///< Value that means the end of string.
 public:
     constexpr			string (void) noexcept		: memblock () { relink ("",0); }
@@ -64,6 +65,8 @@ public:
     inline			string (const_pointer s, size_type len);
     inline			string (const_pointer s1, const_pointer s2);
 				string (size_type n, value_type c);
+    inline			string (string&& v)		: memblock (move(v)) {}
+    inline			string (initlist_t v)		: memblock() { assign (v.begin(), v.size()); }
     inline			~string (void) noexcept		{ }
     constexpr pointer		data (void)			{ return string::pointer (memblock::data()); }
     constexpr const_pointer	data (void) const		{ return string::const_pointer (memblock::data()); }
@@ -107,6 +110,7 @@ public:
     inline string&		append (const_wpointer s)			{ const_wpointer se (s); for (;se&&*se;++se) {} return append (s, se); }
     inline string&		append (const string& s)			{ return append (s.begin(), s.end()); }
     inline string&		append (const string& s,pos_type o,size_type n)	{ return append (s.iat(o), s.iat(o+n)); }
+    inline string&		append (initlist_t v)				{ return append (v.begin(), v.size()); }
     inline void			push_back (value_type c)			{ resize(size()+1); end()[-1] = c; }
     inline void			push_back (wvalue_type c)			{ append (1, c); }
     inline void			pop_back (void)					{ resize (size()-1); }
@@ -119,6 +123,8 @@ public:
     inline string&		assign (const string& s, pos_type o, size_type n)	{ return assign (s.iat(o), s.iat(o+n)); }
     inline string&		assign (size_type n, value_type c)		{ clear(); return append (n, c); }
     inline string&		assign (size_type n, wvalue_type c)		{ clear(); return append (n, c); }
+    inline string&		assign (string&& v)				{ swap (v); return *this; }
+    inline string&		assign (initlist_t v)				{ return assign (v.begin(), v.size()); }
     size_type			copy (pointer p, size_type n, pos_type pos = 0) const noexcept;
     inline size_type		copyto (pointer p, size_type n, pos_type pos = 0) const noexcept { size_type bc = copy(p,n-1,pos); p[bc]=0; return bc; }
     inline int			compare (const string& s) const		{ return compare (begin(), end(), s.begin(), s.end()); }
@@ -134,12 +140,15 @@ public:
     inline const string&	operator= (const_reference c)		{ return assign (&c, 1); }
     inline const string&	operator= (const_pointer s)		{ return assign (s); }
     inline const string&	operator= (const_wpointer s)		{ return assign (s); }
+    inline string&		operator= (string&& v)			{ return assign (move(v)); }
+    inline string&		operator= (initlist_t v)		{ return assign (v.begin(), v.size()); }
     inline const string&	operator+= (const string& s)		{ return append (s.begin(), s.size()); }
     inline const string&	operator+= (value_type c)		{ push_back(c); return *this; }
     inline const string&	operator+= (const_pointer s)		{ return append (s); }
     inline const string&	operator+= (wvalue_type c)		{ return append (1, c); }
     inline const string&	operator+= (uvalue_type c)		{ return operator+= (value_type(c)); }
     inline const string&	operator+= (const_wpointer s)		{ return append (s); }
+    inline string&		operator+= (initlist_t v)		{ return append (v.begin(), v.size()); }
     inline string		operator+ (const string& s) const;
     inline bool			operator== (const string& s) const	{ return memblock::operator== (s); }
     bool			operator== (const_pointer s) const noexcept;
@@ -167,6 +176,7 @@ public:
     inline iterator		insert (const_iterator start, value_type c)				{ return insert (start, 1u, c); }
     iterator			insert (const_iterator start, const_pointer s, size_type n);
     iterator			insert (const_iterator start, const_pointer first, const_iterator last, size_type n = 1);
+    inline iterator		insert (const_iterator ip, initlist_t v)		{ return insert (ip, v.begin(), v.end()); }
     iterator			erase (const_iterator epo, size_type n = 1);
     string&			erase (pos_type epo = 0, size_type n = npos);
     inline string&		erase (int epo, size_type n = npos)			{ return erase (pos_type(epo), n); }
@@ -184,6 +194,7 @@ public:
     inline string&		replace (pos_type rp, size_type n, const_pointer s, size_type slen)			{ return replace (iat(rp), iat(rp + n), s, s + slen); }
     inline string&		replace (pos_type rp, size_type n, const_pointer s)					{ return replace (iat(rp), iat(rp + n), string(s)); }
     inline string&		replace (pos_type rp, size_type n, size_type count, value_type c)			{ return replace (iat(rp), iat(rp + n), count, c); }
+    inline string&		replace (const_iterator first, const_iterator last, initlist_t v)			{ return replace (first, last, v.begin(), v.end()); }
     inline string		substr (pos_type o = 0, size_type n = npos) const	{ return string (*this, o, n); }
     constexpr void		swap (string& v)					{ memblock::swap (v); }
     pos_type			find (value_type c, pos_type pos = 0) const noexcept;
@@ -216,19 +227,6 @@ public:
     void			write (ostream& os) const;
     size_t			stream_size (void) const noexcept;
     static hashvalue_t		hash (const char* f1, const char* l1) noexcept;
-#if HAVE_CPP11
-    using initlist_t = std::initializer_list<value_type>;
-    inline			string (string&& v)		: memblock (move(v)) {}
-    inline			string (initlist_t v)		: memblock() { assign (v.begin(), v.size()); }
-    inline string&		assign (string&& v)		{ swap (v); return *this; }
-    inline string&		assign (initlist_t v)		{ return assign (v.begin(), v.size()); }
-    inline string&		append (initlist_t v)		{ return append (v.begin(), v.size()); }
-    inline string&		operator+= (initlist_t v)	{ return append (v.begin(), v.size()); }
-    inline string&		operator= (string&& v)		{ return assign (move(v)); }
-    inline string&		operator= (initlist_t v)	{ return assign (v.begin(), v.size()); }
-    inline iterator		insert (const_iterator ip, initlist_t v)	{ return insert (ip, v.begin(), v.end()); }
-    inline string&		replace (const_iterator first, const_iterator last, initlist_t v)	{ return replace (first, last, v.begin(), v.end()); }
-#endif
 private:
     virtual size_type		minimumFreeCapacity (void) const noexcept final override __attribute__((const));
 };
@@ -332,10 +330,8 @@ inline type name (const string& str, size_t* idx = nullptr, int base = 10) \
 STRING_TO_INT_CONVERTER(stoi,int,strtol)
 STRING_TO_INT_CONVERTER(stol,long,strtol)
 STRING_TO_INT_CONVERTER(stoul,unsigned long,strtoul)
-#if HAVE_LONG_LONG
 STRING_TO_INT_CONVERTER(stoll,long long,strtoll)
 STRING_TO_INT_CONVERTER(stoull,unsigned long long,strtoull)
-#endif
 #undef STRING_TO_INT_CONVERTER
 
 #define STRING_TO_FLOAT_CONVERTER(name,type,func) \
@@ -359,10 +355,8 @@ NUMBER_TO_STRING_CONVERTER(int,"%d")
 NUMBER_TO_STRING_CONVERTER(unsigned,"%u")
 NUMBER_TO_STRING_CONVERTER(long,"%ld")
 NUMBER_TO_STRING_CONVERTER(unsigned long,"%lu")
-#if HAVE_LONG_LONG
 NUMBER_TO_STRING_CONVERTER(long long,"%lld")
 NUMBER_TO_STRING_CONVERTER(unsigned long long,"%llu")
-#endif
 NUMBER_TO_STRING_CONVERTER(float,"%f")
 NUMBER_TO_STRING_CONVERTER(double,"%lf")
 NUMBER_TO_STRING_CONVERTER(long double,"%Lf")

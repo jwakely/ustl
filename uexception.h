@@ -9,18 +9,12 @@
 
 namespace std {
 /// If you write a replacement terminate handler, it must be of this type.
-typedef void (*terminate_handler) (void);
-/// If you write a replacement unexpected handler, it must be of this type.
-typedef void (*unexpected_handler) (void);
+using terminate_handler = void (*)(void);
 /// Takes a new handler function as an argument, returns the old function.
 terminate_handler set_terminate (terminate_handler pHandler) noexcept;
 /// The runtime will call this function if exception handling must be
 /// abandoned for any reason.  It can also be called by the user.
 void terminate (void) noexcept __attribute__ ((__noreturn__));
-#if !HAVE_CPP14
-/// Takes a new handler function as an argument, returns the old function.
-unexpected_handler set_unexpected (unexpected_handler pHandler) noexcept;
-#endif
 /// The runtime will call this function if an exception is thrown which
 /// violates the function's exception specification.
 void unexpected (void) __attribute__ ((__noreturn__));
@@ -32,7 +26,7 @@ namespace ustl {
 
 class string;
 
-typedef uint32_t	xfmt_t;
+using xfmt_t = uint32_t;
 
 enum {
     xfmt_Exception,
@@ -46,7 +40,7 @@ enum {
 ///
 class exception {
 public:
-    typedef const CBacktrace& rcbktrace_t;
+    using rcbktrace_t = const CBacktrace&;
 public:
     inline		exception (void) noexcept : _backtrace(),_format (xfmt_Exception) {}
     inline virtual	~exception (void) noexcept {}
@@ -110,5 +104,5 @@ protected:
 
 } // namespace std
 namespace ustl {
-    typedef std::bad_alloc bad_alloc;
+    using bad_alloc = std::bad_alloc;
 } // namespace ustl

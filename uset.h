@@ -16,29 +16,33 @@ namespace ustl {
 template <typename T, typename Comp = less<T> >
 class set : public vector<T> {
 public:
-    typedef const set<T,Comp>&				rcself_t;
-    typedef vector<T>					base_class;
-    typedef typename base_class::value_type		key_type;
-    typedef typename base_class::value_type		data_type;
-    typedef typename base_class::value_type		value_type;
-    typedef typename base_class::size_type		size_type;
-    typedef typename base_class::pointer		pointer;
-    typedef typename base_class::const_pointer		const_pointer;
-    typedef typename base_class::reference		reference;
-    typedef typename base_class::const_reference	const_reference;
-    typedef typename base_class::const_iterator		const_iterator;
-    typedef typename base_class::iterator		iterator;
-    typedef typename base_class::reverse_iterator	reverse_iterator;
-    typedef typename base_class::const_reverse_iterator	const_reverse_iterator;
-    typedef pair<iterator,bool>				insertrv_t;
-    typedef pair<iterator,iterator>			range_t;
-    typedef pair<const_iterator,const_iterator>		const_range_t;
+    using rcself_t		= const set<T,Comp>&;
+    using base_class		= vector<T>;
+    using key_type		= typename base_class::value_type;
+    using data_type		= typename base_class::value_type;
+    using value_type		= typename base_class::value_type;
+    using size_type		= typename base_class::size_type;
+    using pointer		= typename base_class::pointer;
+    using const_pointer		= typename base_class::const_pointer;
+    using reference		= typename base_class::reference;
+    using const_reference	= typename base_class::const_reference;
+    using const_iterator	= typename base_class::const_iterator;
+    using iterator		= typename base_class::iterator;
+    using reverse_iterator	= typename base_class::reverse_iterator;
+    using const_reverse_iterator = typename base_class::const_reverse_iterator;
+    using insertrv_t		= pair<iterator,bool>;
+    using range_t		= pair<iterator,iterator>;
+    using const_range_t		= pair<const_iterator,const_iterator>;
+    using initlist_t		= std::initializer_list<value_type>;
 public:
     inline			set (void)		: base_class() { }
     explicit inline		set (size_type n)	: base_class (n) { }
     inline			set (rcself_t v)	: base_class (v) { }
     inline			set (const_iterator i1, const_iterator i2) : base_class() { insert (i1, i2); }
+    inline			set (set&& v)		: base_class (move(v)) {}
+    inline			set (initlist_t v)	: base_class() { insert (v.begin(), v.end()); }
     inline rcself_t		operator= (rcself_t v)	{ base_class::operator= (v); return *this; }
+    inline set&			operator= (set&& v)	{ base_class::operator= (move(v)); return *this; }
     inline size_type		size (void) const	{ return base_class::size(); }
     inline iterator		begin (void)		{ return base_class::begin(); }
     inline const_iterator	begin (void) const	{ return base_class::begin(); }
@@ -59,32 +63,24 @@ public:
     inline Comp			key_comp (void) const			{ return value_comp(); }
     inline void			assign (const_iterator i1, const_iterator i2)	{ clear(); insert (i1, i2); }
     inline void			push_back (const_reference v)		{ insert (v); }
-    insertrv_t			insert (const_reference v);
-    inline iterator		insert (const_iterator, const_reference v)	{ return insert(v).first; }
-    inline void			insert (const_iterator i1, const_iterator i2)	{ for (; i1 < i2; ++i1) insert (*i1); }
-    inline void			erase (const_reference v)		{ iterator ip = find (v); if (ip != end()) erase (ip); }
-    inline iterator		erase (iterator ep)			{ return base_class::erase (ep); }
-    inline iterator		erase (iterator ep1, iterator ep2)	{ return base_class::erase (ep1, ep2); }
-    inline void			clear (void)				{ base_class::clear(); }
-    inline void			swap (set& v)				{ base_class::swap (v); }
-#if HAVE_CPP11
-    using initlist_t = std::initializer_list<value_type>;
-    inline			set (set&& v)				: base_class (move(v)) {}
-    inline			set (initlist_t v)			: base_class() { insert (v.begin(), v.end()); }
-    inline set&			operator= (set&& v)			{ base_class::operator= (move(v)); return *this; }
-    insertrv_t			insert (T&& v);
-    inline iterator		insert (const_iterator, T&& v)		{ return insert (move(v)); }
-    inline void			insert (initlist_t v)			{ insert (v.begin(), v.end()); }
     template <typename... Args>
     inline insertrv_t		emplace (Args&&... args)		{ return insert (T(forward<Args>(args)...)); }
     template <typename... Args>
     inline iterator		emplace_hint (const_iterator h, Args&&... args)	{ return insert (h, T(forward<Args>(args)...)); }
     template <typename... Args>
     inline insertrv_t		emplace_back (Args&&... args)		{ return insert (T(forward<Args>(args)...)); }
-#endif
+    insertrv_t			insert (const_reference v);
+    inline iterator		insert (const_iterator, const_reference v)	{ return insert(v).first; }
+    inline void			insert (const_iterator i1, const_iterator i2)	{ for (; i1 < i2; ++i1) insert (*i1); }
+    insertrv_t			insert (T&& v);
+    inline iterator		insert (const_iterator, T&& v)		{ return insert (move(v)); }
+    inline void			insert (initlist_t v)			{ insert (v.begin(), v.end()); }
+    inline void			erase (const_reference v)		{ iterator ip = find (v); if (ip != end()) erase (ip); }
+    inline iterator		erase (iterator ep)			{ return base_class::erase (ep); }
+    inline iterator		erase (iterator ep1, iterator ep2)	{ return base_class::erase (ep1, ep2); }
+    inline void			clear (void)				{ base_class::clear(); }
+    inline void			swap (set& v)				{ base_class::swap (v); }
 };
-
-#if HAVE_CPP11
 
 template <typename T, typename Comp>
 typename set<T,Comp>::insertrv_t set<T,Comp>::insert (T&& v)
@@ -95,8 +91,6 @@ typename set<T,Comp>::insertrv_t set<T,Comp>::insert (T&& v)
 	ip = base_class::insert (ip, move(v));
     return make_pair (ip, bInserted);
 }
-
-#endif
 
 /// Inserts \p v into the container, maintaining the sort order.
 template <typename T, typename Comp>

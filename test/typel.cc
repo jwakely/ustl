@@ -39,18 +39,18 @@ static void TestTypelists (void)
     cout << "\n----------------------------------------------------------------------\n"
 	    " Testing functionality from typelist.h\n"
 	    "----------------------------------------------------------------------\n";
-    typedef tl::Seq<char, int, short, long>::Type IntTypesList;
-    typedef tl::Seq<float, double>::Type FloatTypesList;
+    using IntTypesList = tl::Seq<char, int, short, long>::Type;
+    using FloatTypesList = tl::Seq<float, double>::Type;
     cout.format ("Length of IntTypesList is %d\n", tl::Length<IntTypesList>::value);
     Print (tl::TypeAt<IntTypesList, 2>::Result(1234));
     Print (tl::TypeAtNonStrict<FloatTypesList, 0, int>::Result(1235));
     Print (tl::TypeAtNonStrict<FloatTypesList, 2, short>::Result(1236));
-    typedef tl::Append<IntTypesList, FloatTypesList>::Result AllTypesList;
+    using AllTypesList = tl::Append<IntTypesList, FloatTypesList>::Result ;
     cout.format ("Index of double in AllTypesList is %d\n", tl::IndexOf<AllTypesList,double>::value);
-    typedef tl::Erase<AllTypesList, float>::Result NoFloatList;
+    using NoFloatList = tl::Erase<AllTypesList, float>::Result;
     cout.format ("Index of float in NoFloatList is %d\n", tl::IndexOf<NoFloatList,float>::value);
     cout.format ("Index of double in NoFloatList is %d\n", tl::IndexOf<NoFloatList,double>::value);
-    typedef tl::Reverse<AllTypesList>::Result ReversedList;
+    using ReversedList = tl::Reverse<AllTypesList>::Result;
     cout.format ("Index of double in ReversedList is %d\n", tl::IndexOf<ReversedList,double>::value);
 }
 

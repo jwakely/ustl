@@ -54,10 +54,9 @@ use the official standard library instead.
 </ul>
 <h2 id="Installation">Installation</h2>
 <p>
-The only dependency is a C++ compiler, gcc 3.4 or clang 3.2. C++14
-support requires gcc 5 or clang 3.6. clang does not optimize for size
-as well as gcc, producing binaries larger by about 15%, so its use is
-not recommended.
+The only dependency is a C++ compiler, gcc 5 or clang 3.6. clang does not
+optimize for size as well as gcc, producing binaries larger by about 15%,
+so its use is not recommended.
 </p><p>
 The latest version of uSTL can always be downloaded from its GitHub
 <a href="https://github.com/msharov/ustl/releases/latest">release page</a>.
@@ -73,13 +72,13 @@ platforms, are not, and will not be supported by the mainline. Unpack and:
 You might want to specify a different installation prefix with
 <kbd>--prefix=/usr</kbd>; the default destination is /usr/local.
 Developers will want to build with <kbd>--with-debug</kbd> to get a lot
-of assert error checking, which I highly recommend. If you have gcc 4.4
-or later, you may want to also use <kbd>--force-inline</kbd>. Unless you
-are compiling a package for distribution, <kbd>--with-native</kbd> should
-be enabled to tune the output for your processor. If you are the type
-to edit configuration manually, it's in Config.mk and config.h. When
-it's built, you can run the included tests with <kbd>make check</kbd>.
-Finally, here's a simple hello world application:
+of assert error checking, which I highly recommend. You may want to
+also use <kbd>--force-inline</kbd>. Unless you are compiling a package
+for distribution, <kbd>--with-native</kbd> should be enabled to tune
+the output for your processor. If you are the type to edit configuration
+manually, it's in Config.mk and config.h. When it's built, you can run
+the included tests with <kbd>make check</kbd>. Finally, here's a simple
+hello world application:
 </p><pre>
 #include &lt;ustl.h&gt;
 using namespace ustl;
@@ -145,7 +144,7 @@ foreach (auto, i, v)
 </pre><p>
 Although the foreach macro is a uSTL-only extension, it is a one-liner
 you can easily copy out of uutility.h if you ever want to switch back to
-regular STL.  It is a great way to ensure you don't forget to increment
+regular STL. It is a great way to ensure you don't forget to increment
 the counter or run past the end of the vector. The only catch to be aware
 of, when inside an iterator loop, is that if you modify the container,
 by adding or removing entries, you have to update the iterator, since the
@@ -273,7 +272,7 @@ container. Most will take an iterator range, like (v.begin(), v.end()),
 but you can, of course operate on a subset of a container by giving a
 different one. Because the usual operation is to use the whole container,
 uSTL provides versions of most algorithms that take container arguments
-instead of the iterator range.  Here are the algorithms you will actually
+instead of the iterator range. Here are the algorithms you will actually
 find useful:
 </p><pre>
 copy (v1, v2.begin());		// Copies vector v1 to vector v2.

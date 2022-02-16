@@ -23,26 +23,30 @@ namespace ustl {
 template <typename T>
 class vector {
 public:
-    typedef T				value_type;
-    typedef value_type*			pointer;
-    typedef const value_type*		const_pointer;
-    typedef value_type&			reference;
-    typedef const value_type&		const_reference;
-    typedef pointer			iterator;
-    typedef const_pointer		const_iterator;
-    typedef memblock::size_type		size_type;
-    typedef memblock::written_size_type	written_size_type;
-    typedef memblock::difference_type	difference_type;
-    typedef ::ustl::reverse_iterator<iterator>	reverse_iterator;
-    typedef ::ustl::reverse_iterator<const_iterator>	const_reverse_iterator;
+    using value_type		= T;
+    using pointer		= value_type*;
+    using const_pointer		= const value_type*;
+    using reference		= value_type&;
+    using const_reference	= const value_type&;
+    using iterator		= pointer;
+    using const_iterator	= const_pointer;
+    using size_type		= memblock::size_type;
+    using written_size_type	= memblock::written_size_type;
+    using difference_type	= memblock::difference_type;
+    using reverse_iterator	= ::ustl::reverse_iterator<iterator>;
+    using const_reverse_iterator = ::ustl::reverse_iterator<const_iterator>;
 public:
     inline			vector (void);
     inline explicit		vector (size_type n);
 				vector (size_type n, const T& v);
 				vector (const vector& v);
 				vector (const_iterator i1, const_iterator i2);
+    inline			vector (vector&& v)			: _data(move(v._data)) {}
+    inline			vector (std::initializer_list<T> v)	: _data() { uninitialized_copy_n (v.begin(), v.size(), append_hole(v.size())); }
+    inline void			push_back (T&& v)			{ emplace_back (move(v)); }
     inline			~vector (void) noexcept;
     inline const vector&	operator= (const vector& v);
+    inline vector&		operator= (vector&& v)			{ swap (v); return *this; }
     inline bool			operator== (const vector& v) const	{ return _data == v._data; }
     inline			operator cmemlink (void) const	{ return cmemlink (_data); }
     inline			operator cmemlink (void)	{ return cmemlink (_data); }
@@ -79,6 +83,8 @@ public:
     inline const_reference	front (void) const		{ return at(0); }
     inline reference		back (void)			{ assert (!empty()); return end()[-1]; }
     inline const_reference	back (void) const		{ assert (!empty()); return end()[-1]; }
+    template <typename... Args>
+    inline void			emplace_back (Args&&... args);
     inline void			push_back (const T& v = T());
     inline void			pop_back (void)			{ size_type nsz = _data.size()-sizeof(T); destroy (iterator(_data.begin()+nsz)); _data.memlink::resize (nsz); }
     inline void			clear (void)			{ destroy_all(); _data.clear(); }
@@ -87,9 +93,13 @@ public:
     inline void			assign (const_iterator i1, const_iterator i2);
     inline void			assign (size_type n, const T& v);
     inline void			swap (vector& v)		{ _data.swap (v._data); }
+    template <typename... Args>
+    inline iterator		emplace (const_iterator ip, Args&&... args);
     inline iterator		insert (const_iterator ip, const T& v);
     inline iterator		insert (const_iterator ip, size_type n, const T& v);
     inline iterator		insert (const_iterator ip, const_iterator i1, const_iterator i2);
+    inline iterator		insert (const_iterator ip, T&& v)	{ return emplace (ip, move(v)); }
+    inline iterator		insert (const_iterator ip, std::initializer_list<T> v)	{ return insert (ip, v.begin(), v.end()); }
     inline iterator		erase (const_iterator ep, size_type n = 1);
     inline iterator		erase (const_iterator ep1, const_iterator ep2);
     inline void			manage (pointer p, size_type n)		{ _data.manage (p, n * sizeof(T)); }
@@ -106,18 +116,6 @@ public:
     inline void			write (ostream& os) const		{ container_write (os, *this); }
     inline void			text_write (ostringstream& os) const	{ container_text_write (os, *this); }
     inline size_t		stream_size (void) const		{ return container_stream_size (*this); }
-#if HAVE_CPP11
-    inline			vector (vector&& v)			: _data(move(v._data)) {}
-    inline			vector (std::initializer_list<T> v)	: _data() { uninitialized_copy_n (v.begin(), v.size(), append_hole(v.size())); }
-    inline vector&		operator= (vector&& v)			{ swap (v); return *this; }
-    template <typename... Args>
-    inline iterator		emplace (const_iterator ip, Args&&... args);
-    template <typename... Args>
-    inline void			emplace_back (Args&&... args);
-    inline void			push_back (T&& v)			{ emplace_back (move(v)); }
-    inline iterator		insert (const_iterator ip, T&& v)	{ return emplace (ip, move(v)); }
-    inline iterator		insert (const_iterator ip, std::initializer_list<T> v)	{ return insert (ip, v.begin(), v.end()); }
-#endif
 protected:
     inline iterator		insert_space (const_iterator ip, size_type n);
 private:
@@ -323,8 +321,6 @@ inline void vector<T>::push_back (const T& v)
     construct_at (append_hole(1), v);
 }
 
-#if HAVE_CPP11
-
 /// Constructs value at \p ip
 template <typename T>
 template <typename... Args>
@@ -340,8 +336,6 @@ inline void vector<T>::emplace_back (Args&&... args)
 {
     new (append_hole(1)) T (forward<Args>(args)...);
 }
-
-#endif
 
 /// Use with vector classes to allocate and link to stack space. \p n is in elements.
 #define typed_alloca_link(m,T,n)	(m).link ((T*) alloca ((n) * sizeof(T)), (n))

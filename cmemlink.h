@@ -36,17 +36,17 @@ class ostringstream;
 ///
 class cmemlink {
 public:
-    typedef char		value_type;
-    typedef const value_type*	pointer;
-    typedef const value_type*	const_pointer;
-    typedef value_type		reference;
-    typedef value_type		const_reference;
-    typedef size_t		size_type;
-    typedef uint32_t		written_size_type;
-    typedef ptrdiff_t		difference_type;
-    typedef const_pointer	const_iterator;
-    typedef const_iterator	iterator;
-    typedef const cmemlink&	rcself_t;
+    using value_type	= char;
+    using pointer	= const value_type*;
+    using const_pointer	= const value_type*;
+    using reference	= value_type;
+    using const_reference = value_type;
+    using size_type	= size_t;
+    using written_size_type = uint32_t;
+    using difference_type = ptrdiff_t;
+    using const_iterator = const_pointer;
+    using iterator	= const_iterator;
+    using rcself_t	= const cmemlink&;
 public:
     inline constexpr	cmemlink (void)				: _data (nullptr), _size (0) { }
     inline constexpr	cmemlink (const void* p, size_type n)	: _data (const_pointer(p)), _size (n) { assert (p || !n); }

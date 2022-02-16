@@ -17,17 +17,23 @@ namespace ustl {
 template <typename T>
 class list : public vector<T> {
 public:
-    typedef typename vector<T>::size_type	size_type;
-    typedef typename vector<T>::iterator	iterator;
-    typedef typename vector<T>::const_iterator	const_iterator;
-    typedef typename vector<T>::reference	reference;
-    typedef typename vector<T>::const_reference	const_reference;
+    using size_type		= typename vector<T>::size_type;
+    using iterator		= typename vector<T>::iterator;
+    using const_iterator	= typename vector<T>::const_iterator;
+    using reference		= typename vector<T>::reference;
+    using const_reference	= typename vector<T>::const_reference;
 public:
     inline			list (void)			: vector<T> () {}
     inline explicit		list (size_type n)		: vector<T> (n) {}
     inline			list (size_type n, const T& v)	: vector<T> (n, v) {}
     inline			list (const list<T>& v)		: vector<T> (v) {}
     inline			list (const_iterator i1, const_iterator i2)	: vector<T> (i1, i2) {}
+    inline			list (list&& v)			: vector<T> (move(v)) {}
+    inline			list (std::initializer_list<T> v) : vector<T>(v) {}
+    inline list&		operator= (list&& v)		{ vector<T>::operator= (move(v)); return *this; }
+    template <typename... Args>
+    inline void			emplace_front (Args&&... args)	{ vector<T>::emplace (begin(), forward<Args>(args)...); }
+    inline void			push_front (T&& v)		{ emplace_front (move(v)); }
     inline size_type		size (void) const		{ return vector<T>::size(); }
     inline iterator		begin (void)			{ return vector<T>::begin(); }
     inline const_iterator	begin (void) const		{ return vector<T>::begin(); }
@@ -45,14 +51,6 @@ public:
     inline void			sort (void)			{ ::ustl::sort (*this); }
     void			merge (list<T>& l);
     void			splice (iterator ip, list<T>& l, iterator first = nullptr, iterator last = nullptr);
-#if HAVE_CPP11
-    inline			list (list&& v)			: vector<T> (move(v)) {}
-    inline			list (std::initializer_list<T> v) : vector<T>(v) {}
-    inline list&		operator= (list&& v)		{ vector<T>::operator= (move(v)); return *this; }
-    template <typename... Args>
-    inline void			emplace_front (Args&&... args)	{ vector<T>::emplace (begin(), forward<Args>(args)...); }
-    inline void			push_front (T&& v)		{ emplace_front (move(v)); }
-#endif
 };
 
 /// Merges the contents with \p l. Assumes both lists are sorted.
@@ -75,10 +73,6 @@ void list<T>::splice (iterator ip, list<T>& l, iterator first, iterator last)
     l.erase (first, last);
 }
 
-#if HAVE_CPP11
-    template <typename T> using deque = list<T>;
-#else
-    #define deque list ///< list has all the functionality provided by deque
-#endif
+template <typename T> using deque = list<T>;
 
 } // namespace ustl

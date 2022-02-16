@@ -33,11 +33,11 @@ namespace ustl {
 ///
 class memlink : public cmemlink {
 public:
-    typedef value_type*			pointer;
-    typedef cmemlink::pointer		const_pointer;
-    typedef cmemlink::const_iterator	const_iterator;
-    typedef pointer			iterator;
-    typedef const memlink&		rcself_t;
+    using pointer	= value_type*;
+    using const_pointer	= cmemlink::pointer;
+    using const_iterator= cmemlink::const_iterator;
+    using iterator	= pointer;
+    using rcself_t	= const memlink&;
 public:
     constexpr		memlink (void)				: cmemlink() {}
     constexpr		memlink (void* p, size_type n)		: cmemlink (p, n) {}

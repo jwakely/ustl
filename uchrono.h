@@ -4,7 +4,6 @@
 // This file is free software, distributed under the MIT License.
 
 #pragma once
-#if HAVE_CPP11
 #include "uratio.h"
 #include <time.h>
 
@@ -421,4 +420,3 @@ using system_clock_ns	= system_clock_hr<nanoseconds>;
 
 } // namespace chrono
 } // namespace ustl
-#endif // HAVE_CPP11
