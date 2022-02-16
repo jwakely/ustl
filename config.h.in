@@ -22,16 +22,6 @@
     #define WANT_STREAM_BOUNDS_CHECKING 1
 #endif
 
-/// Define to 1 if you want backtrace symbols demangled.
-/// This adds some 15k to the library size, and requires that you link it and
-/// any executables you make with the -rdynamic flag (increasing library size
-/// even more). By default only the debug build does this.
-#undef WANT_NAME_DEMANGLING
-
-#if !WANT_NAME_DEMANGLING && !defined(NDEBUG)
-    #define WANT_NAME_DEMANGLING 1
-#endif
-
 /// Define GNU extensions if unavailable.
 #ifndef __GNUC__
     /// GCC (and some other compilers) define '__attribute__'; ustl is using this

@@ -24,10 +24,6 @@ name=[with-native]
 desc=[	Use -march=native]
 seds=[s/ -std=c/ -march=native -std=c/]
 }{
-name=[with-demangler]
-desc=[demangle C++ symbols in backtrace]
-seds=[s/#undef \(WANT_NAME_DEMANGLING\)/#define \1 1/]
-}{
 name=[without-bounds]
 desc=[disable runtime bounds checking on stream reads/writes]
 seds=[s/#define \(WANT_STREAM_BOUNDS_CHECKING\) 1/#undef \1/]
@@ -112,7 +108,6 @@ else
 fi
 if [ "$SYSNAME" = "bsd" ]; then
     sub 's/ @libgcc_eh@//g
-	s/\(NOLIBSTDCPP	= -nodefaultlibs\)/#\1/
 	s/-W\(redundant-decls\)/-Wno-\1/
 	s/-W\(inline\)/-Wno-\1/
 	s/#define \(HAVE_VA_COPY\) 1/#undef \1/'
