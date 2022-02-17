@@ -9,7 +9,7 @@
 #include "utf8.h"
 #include "uios.h"
 #include "strmsize.h"
-#if WANT_STREAM_BOUNDS_CHECKING
+#if WANT_BSTREAM_EXCEPTIONS
     #include "typeinfo.h"
 #endif
 
@@ -158,7 +158,7 @@ inline bool ostream::verify_remaining (const char* op, const char* type, size_t 
 /// Move the write pointer to \p newPos
 inline void ostream::seek (uoff_t newPos)
 {
-#if WANT_STREAM_BOUNDS_CHECKING
+#if WANT_BSTREAM_EXCEPTIONS
     if (newPos > size())
 	return overrun ("seekp", "byte", newPos, pos(), size());
 #else
@@ -192,7 +192,7 @@ inline void ostream::skip (streamsize nBytes)
 /// Writes \p n bytes from \p buffer.
 inline void ostream::write (const void* buffer, size_type n)
 {
-#if WANT_STREAM_BOUNDS_CHECKING
+#if WANT_BSTREAM_EXCEPTIONS
     if (!verify_remaining ("write", "binary data", n))
 	return;
 #else
@@ -213,7 +213,7 @@ template <typename T>
 inline void ostream::iwrite (const T& v)
 {
     assert (aligned (stream_align_of (v)));
-#if WANT_STREAM_BOUNDS_CHECKING
+#if WANT_BSTREAM_EXCEPTIONS
     if (!verify_remaining ("write", typeid(v).name(), sizeof(T)))
 	return;
 #else

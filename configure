@@ -24,9 +24,9 @@ name=[with-native]
 desc=[	Use -march=native]
 seds=[s/ -std=c/ -march=native -std=c/]
 }{
-name=[without-bounds]
-desc=[disable runtime bounds checking on stream reads/writes]
-seds=[s/#define \(WANT_STREAM_BOUNDS_CHECKING\) 1/#undef \1/]
+name=[with-bstrxept]
+desc=[enable runtime bounds checking on binary streams]
+seds=[s/#undef \(WANT_BSTREAM_EXCEPTIONS\)/#define \1 1/]
 }{
 name=[without-fastcopy]
 desc=[disable specializations for copy/fill]

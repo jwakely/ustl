@@ -10,17 +10,12 @@
 // Define to the address where bug reports for this package should be sent.
 #define USTL_BUGREPORT	"@PKG_BUGREPORT@"
 
-/// Define to 1 if you want stream operations to throw exceptions on
-/// insufficient data or insufficient space. All these errors should
+/// Define to 1 if you want binary stream operations to throw exceptions
+/// on insufficient data or insufficient space. All these errors should
 /// be preventable in output code; the input code should verify the
-/// data in a separate step. It slows down stream operations a lot,
-/// but it is your decision. By default only debug builds throw.
+/// data in a separate step. It slows down stream operations a lot.
 ///
-#define WANT_STREAM_BOUNDS_CHECKING 1
-
-#if !WANT_STREAM_BOUNDS_CHECKING && !defined(NDEBUG)
-    #define WANT_STREAM_BOUNDS_CHECKING 1
-#endif
+#undef WANT_BSTREAM_EXCEPTIONS
 
 // Define to 1 if you want unrolled specializations for fill and copy
 #define WANT_UNROLLED_COPY 1

@@ -177,7 +177,7 @@ public:
     inline void	read (istream& is)
     {
 	assert (is.aligned(4));
-	#if WANT_STREAM_BOUNDS_CHECKING
+	#if WANT_BSTREAM_EXCEPTIONS
 	    if (!is.verify_remaining ("read", "long4grain", sizeof(_v))) return;
 	#else
 	    assert (is.remaining() >= sizeof(_v));
@@ -188,7 +188,7 @@ public:
     inline void	write (ostream& os) const
     {
 	assert (os.aligned(4));
-	#if WANT_STREAM_BOUNDS_CHECKING
+	#if WANT_BSTREAM_EXCEPTIONS
 	    if (!os.verify_remaining ("write", "long4grain", sizeof(_v))) return;
 	#else
 	    assert (os.remaining() >= sizeof(_v));

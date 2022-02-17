@@ -80,7 +80,7 @@ void ostream::align (size_type grain)
     iterator ip = ipos();
     iterator ipa = iterator((uintptr_t(ip) + (grain-1)) & ~(grain-1));
     size_t nb = distance (ip, ipa);
-#if WANT_STREAM_BOUNDS_CHECKING
+#if WANT_BSTREAM_EXCEPTIONS
     if (!verify_remaining ("align", "padding", nb))
 	return;
 #else
