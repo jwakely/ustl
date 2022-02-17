@@ -5,5 +5,5 @@ includedir=${prefix}/include
 Name: @PKG_NAME@
 Description: A size-optimized STL implementation
 Version: @PKG_MAJOR@.@PKG_MINOR@
-Libs: -Wl,-gc-sections -L${libdir} -lustl @libsupc++@ @libgcc_eh@ @libSystemStubs@
+Libs: -Wl,-gc-sections -L${libdir} -lustl -lsupc++
 Cflags: -I${includedir}

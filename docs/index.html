@@ -89,11 +89,12 @@ int main (void)
     return EXIT_SUCCESS;
 }
 </pre><p>
-Because uSTL is a static library, you will also need to explicitly link
-all projects using it with -lsupc++ and possibly other language support
-libraries. The easiest way to get the list is to use <kbd>pkg-config
---libs ustl</kbd>. The pkg-config description file for uSTL is installed
-if you have pkg-config on your system.
+Compile the sources with g++, but link the executable with <em>gcc</em>.
+g++ will link with <kbd>-lstdc++</kbd> by default, but to use uSTL
+you need to link with <kbd>-lustl -lsupc++</kbd> instead. The right
+way to get this list of libraries is to use <kbd>pkg-config --libs
+ustl</kbd>. The pkg-config description file for uSTL is installed if
+you have pkg-config on your system.
 </p>
 <h2 id="Containers">Containers and Iterators</h2>
 <p>

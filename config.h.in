@@ -63,13 +63,3 @@
 #define USTL_LITTLE_ENDIAN	__ORDER_LITTLE_ENDIAN__
 #define USTL_BIG_ENDIAN		__ORDER_BIG_ENDIAN__
 #define USTL_BYTE_ORDER		__BYTE_ORDER__
-
-#define USTL_LIBSUPCPP_LINKARG	" @libsupc++@"
-static_assert (sizeof(USTL_LIBSUPCPP_LINKARG) != sizeof(""),
-	"configure was unable to find required library libsupc++.a . This "
-	"may occur if your distribution violates the Linux Filesystem "
-	"Standard by not storing system libraries in /usr/lib . To "
-	"correct the problem, please find libsupc++.a and rerun configure "
-	"with the --libdir=/usr/lib/libsupcppdir option, allowing the library "
-	"to be found and for uSTL to be installed in the location expected "
-	"by your distribution.");

@@ -33,14 +33,8 @@ desc=[make inline keyword mean always inline, not just a hint]
 seds=[s/#undef \(WANT_ALWAYS_INLINE\)/#define \1 1/]
 }';
 
-# Libraries
-LIBS="supc++ c++abi SystemStubs"
-
 # First pair is used if nothing matches
 PROGS="CC=gcc CC=clang CXX=g++ CXX=clang++ LD=ld AR=ar RANLIB=ranlib RANLIB=touch INSTALL=install"
-
-# Environment variables
-ENVIRONS="CXXFLAGS LDFLAGS"
 
 # Automatic vars
 [ -d .git ] && PKG_VERSTR=$(git describe --always)
@@ -94,14 +88,8 @@ case "$SYSNAME" in
     *)			SYSNAME="linux";;
 esac
 
-if [ "$SYSNAME" = "bsd" ]; then
-    sub 's/-W\(redundant-decls\)/-Wno-\1/;s/-W\(inline\)/-Wno-\1/'
-fi
-if [ "$SYSNAME" = "mac" ]; then
-    sub 's/ -s -Wl,-gc-sections/ -mmacosx-version-min=10.9/g'
-    if [ "$CC" = "clang" ]; then
-	sub "s/ @libsupc++@/ @libc++abi@/g"
-    fi
+if [ "$SYSNAME" = "mac" ] && [ "$CC" = "clang" ]; then
+    sub "s/ -lsupc++/ -lc++abi/g"
 fi
 if [ "$SYSNAME" != "linux" ]; then
     sub "s/-p --ignore-fail-on-non-empty//"
@@ -135,9 +123,6 @@ Installation directories:
   --prefix=PREFIX	architecture-independent files [/usr/local]
   --libdir=DIR		object code libraries [PREFIX/lib]
   --includedir=DIR	C header files [PREFIX/include]
-  --gccincludedir=DIR	GCC internal header files [PREFIX/include]
-  --customincdir=DIR	Additional include directory
-  --customlibdir=DIR	Additional library directory
   --builddir=DIR	location for compiled objects [$TMPDIR/make]
 "
     PrintComponents
@@ -180,16 +165,10 @@ done
 #### Set directory prefixes ##########################################
 
 sub "s/@prefix@/${ac_var_prefix:=\/usr\/local}/g
-s/@bindir@/${ac_var_bindir:=$ac_var_prefix\/bin}/g
 s/@includedir@/${ac_var_includedir:=$ac_var_prefix\/include}/g
-s/@oldincludedir@/${ac_var_oldincludedir:=\/usr\/include}/g
 s/@libdir@/${ac_var_libdir:=$ac_var_prefix\/lib}/g
 s/@builddir@/$(escpath ${TMPDIR:-/tmp})\/make/g
-s/@gccincludedir@/${ac_var_gccincludedir:=$(escpath $PINCDIR)}/g
-s/@gcclibdir@/${ac_var_gcclibdir:=$(escpath $PLIBDIR)}/g
-s/@pkgconfigdir@/${ac_var_pkgconfigdir:=$ac_var_libdir\/pkgconfig}/g
-s/@customincdir@/${ac_var_customincdir:=$ac_var_prefix\/include}/g
-s/@customlibdir@/${ac_var_customlibdir:=$ac_var_prefix\/lib}/g"
+s/@pkgconfigdir@/${ac_var_pkgconfigdir:=$ac_var_libdir\/pkgconfig}/g"
 
 # See if pkg-config is installed
 PKGCONFIGDIR=$(echo $ac_var_pkgconfigdir | sed "s/\\\\//g")
@@ -220,12 +199,6 @@ if [ "$ac_var_includedir" = "\/usr\/local\/include" ] || [ "$ac_var_includedir" 
     sub "s/ -I\${includedir}//";
 fi
 
-if [ "$ac_var_prefix" != "\/usr\/local" ] && [ "$ac_var_prefix" != "\/usr" ]; then
-    sub "s/ @CUSTOMINCDIR@/ -I$ac_var_customincdir/;s/ @CUSTOMLIBDIR@/ -L$ac_var_customlibdir/"
-else
-    sub "s/ @CUSTOMINCDIR@//;s/ @CUSTOMLIBDIR@//"
-fi
-
 # See if pkg-config is installed
 PKGCONFIGDIR=$(echo $ac_var_pkgconfigdir | sed "s/\\\\//g")
 [ ! -d $PKGCONFIGDIR ] || sub "s/#\(PKGCONFIGDIR\)/\1/"
@@ -233,23 +206,7 @@ PKGCONFIGDIR=$(echo $ac_var_pkgconfigdir | sed "s/\\\\//g")
 #### Find headers, libs, programs, and subs ##########################
 
 SubHeadLibsProgs() {
-local LIBPATH LIBSUFFIX found pname pcall esciv
-LIBPATH="$(echo $LD_LIBRARY_PATH | tr ':' ' ') $ac_var_libdir $ac_var_gcclibdir $ac_var_customlibdir /lib /usr/lib /usr/local/lib /usr/lib/x86_64-linux-gnu"
-LIBPATH=$(echo $LIBPATH | sed "s/\\\\//g")
-LIBSUFFIX="so a la dylib"
-for i in $LIBS; do
-    found=
-    for p in $LIBPATH; do
-	for s in $LIBSUFFIX; do
-	    if [ -r "$p/lib$i.$s" ]; then
-		found=" -l$i"
-		break
-	    fi
-	done
-	[ -z "$found" ] || break
-    done
-    sub "s/ @lib$i@/$found/g"
-done
+local pname pcall
 
 for i in $PROGS; do
     pname=$(expr "$i" : '\([^=]*\)')
