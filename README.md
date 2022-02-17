@@ -16,6 +16,13 @@ library, but continues to have numerous incompatibilities that were required
 to get those space savings twenty years ago. So when I ask you to just use
 the standard library, I really do mean it!
 
+If you are using uSTL for its non-standard features or because you find it
+better fits your way of thinking, consider converting to
+[cwiclo](https://github.com/msharov/cwiclo), which is what I am currently
+developing for this purpose. It has no documentation at present, but if you
+like uSTL, cwiclo lets you do things more or less the same way. And I use
+it myself, so it will actually continue being supported.
+
 ## Installation
 
 The only dependency is a C++ compiler, gcc 5 or clang 3.6.
@@ -28,5 +35,26 @@ make
 make check
 make install
 ```
+
+## Use
+
+Here's a simple hello world application:
+```c++
+#include <ustl.h>
+using namespace ustl;
+
+int main (void)
+{
+    cout << "Hello world!\n";
+    return EXIT_SUCCESS;
+}
+```
+Compile the sources with g++, but link the executable with *gcc*.
+g++ will link with `-lstdc++` by default, but to use uSTL you need to
+link with `-lustl -lsupc++` instead. The right way to get this list of
+libraries is to use `pkg-config --libs ustl`. The pkg-config description
+file for uSTL is installed if you have pkg-config on your system.
+
+## Bugs
 
 Report bugs on the [github issue tracker](https://github.com/msharov/ustl/issues)

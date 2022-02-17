@@ -2,13 +2,13 @@
 #pragma once
 
 // Define to the one symbol short name of this package.
-#define USTL_NAME	"@PKG_NAME@"
+#define USTL_NAME	"@pkg_name@"
 // Define to the full name and version of this package.
-#define USTL_STRING	"@PKG_NAME@ @PKG_VERSTR@"
+#define USTL_STRING	"@pkg_name@ @pkg_verstr@"
 // Define to the version of this package.
-#define USTL_VERSION	@PKG_VERSION@
+#define USTL_VERSION	@pkg_version@
 // Define to the address where bug reports for this package should be sent.
-#define USTL_BUGREPORT	"@PKG_BUGREPORT@"
+#define USTL_BUGREPORT	"@pkg_bugreport@"
 
 /// Define to 1 if you want binary stream operations to throw exceptions
 /// on insufficient data or insufficient space. All these errors should

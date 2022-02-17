@@ -1,44 +1,35 @@
-################ Build options #######################################
-
-NAME		:= @PKG_NAME@
-MAJOR		:= @PKG_MAJOR@
-MINOR		:= @PKG_MINOR@
+name		:= @pkg_name@
 
 ################ Programs ############################################
 
 CXX		:= @CXX@
-LD		:= @CC@
+CC		:= @CC@
 AR		:= @AR@
 RANLIB		:= @RANLIB@
 INSTALL		:= @INSTALL@
-
-INSTALLDATA	:= ${INSTALL} -p -m 644
-INSTALLLIB	:= ${INSTALLDATA}
-RMPATH		:= rmdir -p --ignore-fail-on-non-empty
+INSTALL_DATA	:= ${INSTALL} -m 644
 
 ################ Destination #########################################
 
 prefix		:= @prefix@
-INCDIR		:= @includedir@
-LIBDIR		:= @libdir@
-#PKGCONFIGDIR	:= @pkgconfigdir@
-BUILDDIR	:= @builddir@/${NAME}
+includedir	:= @includedir@
+libdir		:= @libdir@
+pkgconfigdir	:= @pkgconfigdir@
+TMPDIR		:= @TMPDIR@
+builddir	:= @builddir@/${name}
 O		:= .o/
 
 ################ Compiler options ####################################
 
-#DEBUG		:= 1
-WARNOPTS	:= -Wall -Wextra -Woverloaded-virtual -Wpointer-arith\
-		-Wshadow -Wredundant-decls -Wcast-qual
-TGTOPTS		:= -std=c++14
-INLINEOPTS	:= -fno-threadsafe-statics -fno-enforce-eh-specs
-
-CXXFLAGS	:= ${WARNOPTS} ${TGTOPTS}
-LIBS		:= -lsupc++
-ifdef DEBUG
-    CXXFLAGS	+= -O0 -g
-    LDFLAGS	:= -g -rdynamic
+#debug		:= 1
+libs		:= -lsupc++
+ifdef debug
+    cxxflags	:= -O0 -ggdb3
+    ldflags	:= -g -rdynamic ${LDFLAGS}
 else
-    CXXFLAGS	+= -Os -g0 -DNDEBUG=1 ${INLINEOPTS}
-    LDFLAGS	:= -s -Wl,-gc-sections
+    cxxflags	:= -Os -g0 -DNDEBUG=1
+    ldflags	:= -s -Wl,-O1,-gc-sections ${LDFLAGS}
 endif
+cxxflags	+= -Wall -Wextra -Wredundant-decls -Wshadow \
+		   -std=c++14 -ffunction-sections -fdata-sections \
+		   ${CXXFLAGS}

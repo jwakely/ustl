@@ -71,13 +71,12 @@ platforms, are not, and will not be supported by the mainline. Unpack and:
 <kbd>./configure --help</kbd> lists available build options.
 You might want to specify a different installation prefix with
 <kbd>--prefix=/usr</kbd>; the default destination is /usr/local.
-Developers will want to build with <kbd>--with-debug</kbd> to get a lot
-of assert error checking, which I highly recommend. You may want to also
+You may want to also
 use <kbd>--with-forced-inline</kbd>. Unless you are compiling a package
 for distribution, <kbd>--with-native</kbd> should be enabled to tune
 the output for your processor. If you are the type to edit configuration
 manually, it's in Config.mk and config.h. When it's built, you can run
-the included tests with <kbd>make check</kbd>. Finally, here's a simple
+the included tests with <kbd>make check</kbd>. Here's a simple
 hello world application:
 </p><pre>
 #include &lt;ustl.h&gt;
@@ -95,6 +94,29 @@ you need to link with <kbd>-lustl -lsupc++</kbd> instead. The right
 way to get this list of libraries is to use <kbd>pkg-config --libs
 ustl</kbd>. The pkg-config description file for uSTL is installed if
 you have pkg-config on your system.
+</p><p>
+To build uSTL with debug info, run <kbd>make debug=1 install</kbd>.
+This will build and install <kbd>libustl_d.a</kbd>. Unfortunately,
+there is no standard for naming a separate library with debug info.
+When developing you want to have both for each of your project's
+dependencies, so you could quickly switch between building a debug
+version for troubleshooting and an optimized version for release
+or local use. For this purpose I came up with this dual file system.
+The derived project links with the pkg-config-provided libs, but
+the makefile also has a debug section for rewriting the name:
+</p><pre>
+ifdef debug
+    cxxflags	:= -O0 -ggdb3
+    ldflags	:= -g -rdynamic
+    libs	:= $(subst lustl,lustl_d,${libs})
+else
+    cxxflags	:= -Os -g0 -DNDEBUG=1
+    ldflags	:= -s
+endif
+</pre><p>
+This way you can build a debug version of your project with <kbd>make
+debug=1</kbd>, automatically linking with debug versions of each
+dependent library. A bit unusual, but it works.
 </p>
 <h2 id="Containers">Containers and Iterators</h2>
 <p>
