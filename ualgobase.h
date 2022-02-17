@@ -133,24 +133,25 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
     return first;
 }
 
-#if __MMX__
-extern "C" void copy_n_fast (const void* src, size_t count, void* dest) noexcept;
-#else
-inline void copy_n_fast (const void* src, size_t count, void* dest) noexcept
-    { memmove (dest, src, count); }
-#endif
+inline constexpr void copy_n_fast (const void* src, size_t count, void* dest) noexcept
+    { __builtin_memmove (dest, src, count); }
+inline constexpr void copy_backward_fast (const void* first, const void* last, void* result) noexcept
+    { __builtin_memmove (advance_ptr(result,-distance(first,last)), first, distance(first,last)); }
+inline constexpr void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v) noexcept
+    { __builtin_memset (dest, v, count); }
+template <typename T> static inline void stosv (T*& p, size_t n, T v)
+    { while (n--) *p++ = v; }
 #if __x86__
-extern "C" void copy_backward_fast (const void* first, const void* last, void* result) noexcept;
-#else
-inline void copy_backward_fast (const void* first, const void* last, void* result) noexcept
-{
-    const size_t nBytes (distance (first, last));
-    memmove (advance_ptr(result,-nBytes), first, nBytes);
-}
+template <> inline void stosv (uint16_t*& p, size_t n, uint16_t v)
+    { asm volatile ("rep;\n\tstosw" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
+template <> inline void stosv (uint32_t*& p, size_t n, uint32_t v)
+    { asm volatile ("rep;\n\tstosl" : "=&D"(p), "=c"(n) : "0"(p), "1"(n), "a"(v) : "memory"); }
 #endif
-extern "C" void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v) noexcept;
-extern "C" void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v) noexcept;
-extern "C" void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v) noexcept;
+inline void fill_n16_fast (uint16_t* dest, size_t count, uint16_t v) noexcept
+    { stosv (dest, count, v); }
+inline void fill_n32_fast (uint32_t* dest, size_t count, uint32_t v) noexcept
+    { stosv (dest, count, v); }
+
 extern "C" void rotate_fast (void* first, void* middle, void* last) noexcept;
 
 /// \brief Computes the number of 1 bits in a number.
