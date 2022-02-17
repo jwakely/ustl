@@ -61,8 +61,6 @@ void transpose (matrix<N,N,T>& m)
 	    swap (m[x][y], m[y][x]);
 }
 
-#if WANT_UNROLLED_COPY
-
 #if __SSE__
 #if __linux__ // Non-linux gcc versions (BSD, Solaris) can't handle "x" constraint and provide no alternative.
 template <>
@@ -210,6 +208,5 @@ template <> inline tuple<4,float> operator* (const tuple<4,float>& t, const matr
 }
 
 #endif	// __3DNOW__
-#endif	// WANT_UNROLLED_COPY
 
 } // namespace ustl

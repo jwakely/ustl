@@ -162,8 +162,6 @@ inline size_t popcount (uint64_t v)	{ return __builtin_popcountll (v); }
 // Optimized versions for standard types
 //----------------------------------------------------------------------
 
-#if WANT_UNROLLED_COPY
-
 template <typename T>
 inline T* unrolled_copy (const T* first, size_t count, T* result)
 {
@@ -194,7 +192,6 @@ template <> inline uint32_t* unrolled_fill (uint32_t* result, size_t count, uint
 template <> inline float* unrolled_fill (float* result, size_t count, float value)
     { fill_n32_fast (reinterpret_cast<uint32_t*>(result), count, *noalias_cast<uint32_t*>(&value)); return result + count; }
 
-#if __MMX__
 #define UNROLLED_COPY_SPECIALIZATION(type)						\
 template <> inline type* copy (const type* first, const type* last, type* result)	\
 { return unrolled_copy (first, distance (first, last), result); }			\
@@ -215,8 +212,6 @@ UNROLLED_COPY_SPECIALIZATION(float)
 UNROLLED_FILL_SPECIALIZATION(float)
 #undef UNROLLED_FILL_SPECIALIZATION
 #undef UNROLLED_COPY_SPECIALIZATION
-#endif // WANT_UNROLLED_COPY
-#endif // __MMX__
 
 // Specializations for void* and char*, aliasing the above optimized versions.
 //
@@ -228,7 +223,6 @@ UNROLLED_FILL_SPECIALIZATION(float)
 #define COPY_ALIAS_FUNC(ctype, type, alias_type)			\
 template <> inline type* copy (ctype* first, ctype* last, type* result)	\
 { return reinterpret_cast<type*> (copy (reinterpret_cast<const alias_type*>(first), reinterpret_cast<const alias_type*>(last), reinterpret_cast<alias_type*>(result))); }
-#if WANT_UNROLLED_COPY
 #if HAVE_THREE_CHAR_TYPES
 COPY_ALIAS_FUNC(const char, char, uint8_t)
 COPY_ALIAS_FUNC(char, char, uint8_t)
@@ -239,19 +233,15 @@ COPY_ALIAS_FUNC(uint8_t, uint8_t, uint8_t)
 COPY_ALIAS_FUNC(const int16_t, int16_t, uint16_t)
 COPY_ALIAS_FUNC(int16_t, int16_t, uint16_t)
 COPY_ALIAS_FUNC(uint16_t, uint16_t, uint16_t)
-#if __MMX__ || (SIZE_OF_LONG > 4)
 COPY_ALIAS_FUNC(const int32_t, int32_t, uint32_t)
 COPY_ALIAS_FUNC(int32_t, int32_t, uint32_t)
 COPY_ALIAS_FUNC(uint32_t, uint32_t, uint32_t)
-#endif
-#endif
 COPY_ALIAS_FUNC(const void, void, uint8_t)
 COPY_ALIAS_FUNC(void, void, uint8_t)
 #undef COPY_ALIAS_FUNC
 #define COPY_BACKWARD_ALIAS_FUNC(ctype, type, alias_type)				\
 template <> inline type* copy_backward (ctype* first, ctype* last, type* result)	\
 { return reinterpret_cast<type*> (copy_backward (reinterpret_cast<const alias_type*>(first), reinterpret_cast<const alias_type*>(last), reinterpret_cast<alias_type*>(result))); }
-#if WANT_UNROLLED_COPY
 #if HAVE_THREE_CHAR_TYPES
 COPY_BACKWARD_ALIAS_FUNC(char, char, uint8_t)
 #endif
@@ -261,7 +251,6 @@ COPY_BACKWARD_ALIAS_FUNC(uint16_t, uint16_t, uint8_t)
 COPY_BACKWARD_ALIAS_FUNC(const uint16_t, uint16_t, uint8_t)
 COPY_BACKWARD_ALIAS_FUNC(int16_t, int16_t, uint8_t)
 COPY_BACKWARD_ALIAS_FUNC(const int16_t, int16_t, uint8_t)
-#endif
 COPY_BACKWARD_ALIAS_FUNC(void, void, uint8_t)
 COPY_BACKWARD_ALIAS_FUNC(const void, void, uint8_t)
 #undef COPY_BACKWARD_ALIAS_FUNC
@@ -270,24 +259,19 @@ template <> inline void fill (type* first, type* last, const v_type& value)	\
 { fill (reinterpret_cast<alias_type*>(first), reinterpret_cast<alias_type*>(last), alias_type(value)); }
 FILL_ALIAS_FUNC(void, uint8_t, char)
 FILL_ALIAS_FUNC(void, uint8_t, uint8_t)
-#if WANT_UNROLLED_COPY
 #if HAVE_THREE_CHAR_TYPES
 FILL_ALIAS_FUNC(char, uint8_t, char)
 FILL_ALIAS_FUNC(char, uint8_t, uint8_t)
 #endif
 FILL_ALIAS_FUNC(int8_t, uint8_t, int8_t)
 FILL_ALIAS_FUNC(int16_t, uint16_t, int16_t)
-#if __MMX__ || (SIZE_OF_LONG > 4)
 FILL_ALIAS_FUNC(int32_t, uint32_t, int32_t)
-#endif
-#endif
 #undef FILL_ALIAS_FUNC
 #define COPY_N_ALIAS_FUNC(ctype, type, alias_type)					\
 template <> inline type* copy_n (ctype* first, size_t count, type* result)	\
 { return reinterpret_cast<type*> (copy_n (reinterpret_cast<const alias_type*>(first), count, reinterpret_cast<alias_type*>(result))); }
 COPY_N_ALIAS_FUNC(const void, void, uint8_t)
 COPY_N_ALIAS_FUNC(void, void, uint8_t)
-#if WANT_UNROLLED_COPY
 #if HAVE_THREE_CHAR_TYPES
 COPY_N_ALIAS_FUNC(const char, char, uint8_t)
 COPY_N_ALIAS_FUNC(char, char, uint8_t)
@@ -298,29 +282,22 @@ COPY_N_ALIAS_FUNC(const int8_t, int8_t, uint8_t)
 COPY_N_ALIAS_FUNC(int16_t, int16_t, uint16_t)
 COPY_N_ALIAS_FUNC(uint16_t, uint16_t, uint16_t)
 COPY_N_ALIAS_FUNC(const int16_t, int16_t, uint16_t)
-#if __MMX__ || (SIZE_OF_LONG > 4)
 COPY_N_ALIAS_FUNC(int32_t, int32_t, uint32_t)
 COPY_N_ALIAS_FUNC(uint32_t, uint32_t, uint32_t)
 COPY_N_ALIAS_FUNC(const int32_t, int32_t, uint32_t)
-#endif
-#endif
 #undef COPY_N_ALIAS_FUNC
 #define FILL_N_ALIAS_FUNC(type, alias_type, v_type)				\
 template <> inline type* fill_n (type* first, size_t n, const v_type& value)	\
 { return reinterpret_cast<type*> (fill_n (reinterpret_cast<alias_type*>(first), n, alias_type(value))); }
 FILL_N_ALIAS_FUNC(void, uint8_t, char)
 FILL_N_ALIAS_FUNC(void, uint8_t, uint8_t)
-#if WANT_UNROLLED_COPY
 #if HAVE_THREE_CHAR_TYPES
 FILL_N_ALIAS_FUNC(char, uint8_t, char)
 FILL_N_ALIAS_FUNC(char, uint8_t, uint8_t)
 #endif
 FILL_N_ALIAS_FUNC(int8_t, uint8_t, int8_t)
 FILL_N_ALIAS_FUNC(int16_t, uint16_t, int16_t)
-#if __MMX__ || (SIZE_OF_LONG > 4)
 FILL_N_ALIAS_FUNC(int32_t, uint32_t, int32_t)
-#endif
-#endif
 #undef FILL_N_ALIAS_FUNC
 
 extern const char _FmtPrtChr[2][8];
