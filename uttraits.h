@@ -162,6 +162,8 @@ UNARY_TRAIT_TRUE (__is_signed, short);
 UNARY_TRAIT_TRUE (__is_signed, int);
 UNARY_TRAIT_TRUE (__is_signed, long);
 UNARY_TRAIT_TRUE (__is_signed, long long);
+UNARY_TRAIT_TRUE (__is_signed, float);
+UNARY_TRAIT_TRUE (__is_signed, double);
 UNARY_TRAIT_DEFB (is_signed, __is_signed<remove_cv_t<T>>::value);
 
 UNARY_TRAIT_DEFN (__is_floating_point);

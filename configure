@@ -165,8 +165,12 @@ for i in $progs; do
 	fi
     fi
 done
-if [ "$SYSNAME" = "mac" ] && [ "$CC" = "clang" ]; then
-    sub "s/ -lsupc++/ -lc++abi/g"
+if [ "$CC" = "clang" ]; then
+    if [ "$SYSNAME" = "mac" ]; then
+	sub "s/ -lsupc++/ -lc++abi/g"
+    elif [ "$SYSNAME" != "linux" ]; then
+	sub "s/ -lsupc++/ -lcxxrt/g"
+    fi
 fi
 # If nothing found in first loop, set the first pair anyway
 for i in $progs; do

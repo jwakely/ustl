@@ -181,11 +181,9 @@ static void TestTypeTraits (void)
 
     PRT (is_signed<int>);
     PRT (is_signed<unsigned int>);
-    PRT (is_signed<float>);
 
     PRT (is_unsigned<int>);
     PRT (is_unsigned<unsigned int>);
-    PRT (is_unsigned<float>);
 
     PRT (sizeof(char) == alignment_of<char>);
     PRT (sizeof(short) == alignment_of<short>);

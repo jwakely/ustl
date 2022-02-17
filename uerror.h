@@ -110,7 +110,6 @@ error_condition make_error_condition (errc) noexcept;
 class error_category {
 public:
     constexpr			error_category (void) noexcept = default;
-    error_category&		operator= (const error_category&) = delete;
     inline constexpr auto	name (void) const	{ return "system"; }
     inline auto			message (int ec) const	{ return strerror(ec); }
     inline error_condition	default_error_condition (int ec) const noexcept;

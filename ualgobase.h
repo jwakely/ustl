@@ -133,12 +133,12 @@ inline OutputIterator fill_n (OutputIterator first, size_t count, const T& value
     return first;
 }
 
-inline constexpr void copy_n_fast (const void* src, size_t count, void* dest) noexcept
-    { __builtin_memmove (dest, src, count); }
-inline constexpr void copy_backward_fast (const void* first, const void* last, void* result) noexcept
-    { __builtin_memmove (advance_ptr(result,-distance(first,last)), first, distance(first,last)); }
-inline constexpr void fill_n8_fast (uint8_t* dest, size_t count, uint8_t v) noexcept
-    { __builtin_memset (dest, v, count); }
+inline constexpr auto copy_n_fast (const void* src, size_t count, void* dest) noexcept
+    { return __builtin_memmove (dest, src, count); }
+inline constexpr auto copy_backward_fast (const void* first, const void* last, void* result) noexcept
+    { return __builtin_memmove (advance_ptr(result,-distance(first,last)), first, distance(first,last)); }
+inline auto fill_n8_fast (uint8_t* dest, size_t count, uint8_t v) noexcept
+    { return __builtin_memset (dest, v, count); }
 template <typename T> static inline void stosv (T*& p, size_t n, T v)
     { while (n--) *p++ = v; }
 #if __x86__
