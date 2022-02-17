@@ -32,7 +32,7 @@ name=[without-fastcopy]
 desc=[disable specializations for copy/fill]
 seds=[s/#define \(WANT_UNROLLED_COPY\) 1/#undef \1/]
 }{
-name=[force-inline]
+name=[with-forced-inline]
 desc=[make inline keyword mean always inline, not just a hint]
 seds=[s/#undef \(WANT_ALWAYS_INLINE\)/#define \1 1/]
 }';
