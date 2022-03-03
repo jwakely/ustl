@@ -16,13 +16,6 @@ library, but continues to have numerous incompatibilities that were required
 to get those space savings twenty years ago. So when I ask you to just use
 the standard library, I really do mean it!
 
-If you are using uSTL for its non-standard features or because you find it
-better fits your way of thinking, consider converting to
-[cwiclo](https://github.com/msharov/cwiclo), which is what I am currently
-developing for this purpose. It has no documentation at present, but if you
-like uSTL, cwiclo lets you do things more or less the same way. And I use
-it myself, so it will actually continue being supported.
-
 ## Installation
 
 The only dependency is a C++ compiler, gcc 5 or clang 3.6.
