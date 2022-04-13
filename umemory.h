@@ -184,7 +184,7 @@ public:
     inline constexpr explicit	operator bool (void) const	{ return get(); }
     inline shared_ptr&		operator= (pointer p)		{ reset (p); return *this; }
     inline shared_ptr&		operator= (shared_ptr&& p)	{ swap (p); return *this; }
-    inline shared_ptr&		operator= (const shared_ptr& p)	{ reset(); _p = p; if (_p) ++_p->refs; return *this; }
+    inline shared_ptr&		operator= (const shared_ptr& p)	{ auto pp = p._p; if (pp) ++pp->refs; reset(); _p = pp; return *this; }
     inline constexpr reference	operator* (void) const		{ return *get(); }
     inline constexpr pointer	operator-> (void) const		{ return get(); }
     inline constexpr reference	operator[] (size_t i) const	{ return get()[i]; }
